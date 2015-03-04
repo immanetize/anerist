@@ -1,0 +1,15 @@
+########################################
+# Handlers for restarting services
+#
+- name: systemd unit change
+  command: /bin/systemctl daemon-reload
+
+- name: reload firewalld
+  command: /usr/bin/firewall-cmd --reload
+
+- name: restart buildbot master
+  action: service name=buildbot-master@docs-site state=restarted
+
+- name: restart buildbot slave
+  service: name=buildbot-slave@docs-site state=restarted
+
