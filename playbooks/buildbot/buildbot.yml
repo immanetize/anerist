@@ -1,13 +1,13 @@
 ---
-- name: create buildbot slaves
-  handlers:
-    - include: ../../handlers/buildbot-handlers.yml
-  hosts: buildbot-slaves
-  roles: 
-    - buildbot-slaves
 - name: create a buildbot master      
   handlers:
     - include: ../../handlers/buildbot-handlers.yml
   hosts: buildbot-masters
   roles: 
     - buildbot-master
+- name: create buildbot slaves
+  handlers:
+    - include: ../../handlers/buildbot-handlers.yml
+  hosts: buildbot-slaves
+  roles: 
+    - buildbot-slaves

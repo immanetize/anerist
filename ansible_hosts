@@ -1,0 +1,7 @@
+[buildbot-slaves]
+buildslave01.home.randomuser.org
+buildslave02.home.randomuser.org
+buildslave03.home.randomuser.org
+
+[buildbot-masters]
+buildbot.home.randomuser.org
