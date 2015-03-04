@@ -5,7 +5,10 @@
 - name: create buildslave user
   user: comment="buildbot user" name="buildbot"
 - name: Copy buildbot service definition
-  copy: src=buildbot-master@.service dest=/etc/systemd/system/buildbot-master@.service
+  copy: src={{ item }} dest=/etc/systemd/system/
+  with_items:
+    - buildbot-master@.service
+    - buildbot-master-creator@.service
   notify: 
     - systemd unit change
 - name: open firewall for buildbot web ui
