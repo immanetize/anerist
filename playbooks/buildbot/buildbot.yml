@@ -1,0 +1,13 @@
+---
+- name: create buildbot slaves
+  handlers:
+    - include: ../../handlers/restart_services.yml
+  hosts: buildbot-slaves
+  roles: 
+    - buildbot-slaves
+- name: create a buildbot master      
+  handlers:
+    - include: ../../handlers/restart_services.yml
+  hosts: buildbot-masters
+  roles: 
+    - buildbot-master
