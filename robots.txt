@@ -1,2 +1,2 @@
-Sitemap: http://getnikola.com/sitemapindex.xml
+Sitemap: http://immanetize.github.io/sitemapindex.xml
 

@@ -7,7 +7,9 @@
 .. description: 
 .. type: text
 
-This "ansible" branch contains a somewhat reusable ansible configuration.  Later, it should be converted to a more distributable format.
+The "ansible" branch contains a somewhat reusable ansible configuration.  Later, it should be converted to a more distributable format.
+
+Clone it at https://github.com/immanetize/anerist .
 
     The Aneristic Principle is that of APPARENT ORDER; the Eristic
     Principle is that of APPARENT DISORDER. Both order and disorder are man made
