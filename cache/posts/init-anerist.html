@@ -1,0 +1,31 @@
+<p>The &quot;ansible&quot; branch contains a somewhat reusable ansible configuration.  Later, it should be converted to a more distributable format.</p>
+<p>Clone it at <a class="reference external" href="https://github.com/immanetize/anerist">https://github.com/immanetize/anerist</a> .</p>
+<blockquote>
+<p>The Aneristic Principle is that of APPARENT ORDER; the Eristic
+Principle is that of APPARENT DISORDER. Both order and disorder are man made
+concepts and are artificial divisions of PURE CHAOS, which is a level deeper
+that is the level of distinction making.</p>
+<p class="attribution">&mdash;A monkey</p>
+</blockquote>
+<p>Anerist is a collection of Python scripts for buildbot.  It processes documentation of a variety of formats and generates a website frontend for browsing all processed docs.</p>
+<div class="section" id="builder-roles">
+<h1>Builder roles</h1>
+<p>For each known markup format, Anerist provides three types of BuildFactories for processing.</p>
+<div class="section" id="validation">
+<h2>Validation</h2>
+<p>A validation factory ingests changes from VCS and builds the document to test them.  It may integrate unit tests such as those offered by <a class="reference external" href="https://github.com/emender/emender">emender</a>.</p>
+<p>If a build is successfully validated, new strings are generated for translation and pushed to a translation platform, currently Zanata.</p>
+</div>
+<div class="section" id="integration">
+<h2>Integration</h2>
+<p>An integration factory pulls translations from a centralized translation platform like Zanata and tests them.  If the translated document is built successfully, the translations are committed to version control.</p>
+</div>
+<div class="section" id="production">
+<h2>Production</h2>
+<p>A production factory builds the content in a format designed for web viewing and pushes it to a central location for later processing by the Assembler.</p>
+</div>
+</div>
+<div class="section" id="the-assembler">
+<h1>The Assembler</h1>
+<p>The Assembler processes a directory containing all production builds of all known documentation.  It does not yet exist.</p>
+</div>

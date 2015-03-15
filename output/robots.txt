@@ -1,0 +1,2 @@
+Sitemap: http://immanetize.github.io/sitemapindex.xml
+
