@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>the Anerist</title><link>http://getnikola.com/</link><description>Some info about the Anerist project</description><atom:link href="http://getnikola.com/rss.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Sun, 15 Mar 2015 08:32:59 GMT</lastBuildDate><generator>http://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>init Anerist</title><link>http://getnikola.com/posts/init-anerist.html</link><dc:creator>Pete Travis</dc:creator><description>&lt;div&gt;&lt;p&gt;This "ansible" branch contains a somewhat reusable ansible configuration.  Later, it should be converted to a more distributable format.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The Aneristic Principle is that of APPARENT ORDER; the Eristic
+Principle is that of APPARENT DISORDER. Both order and disorder are man made
+concepts and are artificial divisions of PURE CHAOS, which is a level deeper
+that is the level of distinction making.&lt;/p&gt;
+&lt;p class="attribution"&gt;—A monkey&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Anerist is a collection of Python scripts for buildbot.  It processes documentation of a variety of formats and generates a website frontend for browsing all processed docs.&lt;/p&gt;
+&lt;div class="section" id="builder-roles"&gt;
+&lt;h2&gt;Builder roles&lt;/h2&gt;
+&lt;p&gt;For each known markup format, Anerist provides three types of BuildFactories for processing.&lt;/p&gt;
+&lt;div class="section" id="validation"&gt;
+&lt;h3&gt;Validation&lt;/h3&gt;
+&lt;p&gt;A validation factory ingests changes from VCS and builds the document to test them.  It may integrate unit tests such as those offered by &lt;a class="reference external" href="https://github.com/emender/emender"&gt;emender&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If a build is successfully validated, new strings are generated for translation and pushed to a translation platform, currently Zanata.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="integration"&gt;
+&lt;h3&gt;Integration&lt;/h3&gt;
+&lt;p&gt;An integration factory pulls translations from a centralized translation platform like Zanata and tests them.  If the translated document is built successfully, the translations are committed to version control.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="production"&gt;
+&lt;h3&gt;Production&lt;/h3&gt;
+&lt;p&gt;A production factory builds the content in a format designed for web viewing and pushes it to a central location for later processing by the Assembler.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="the-assembler"&gt;
+&lt;h2&gt;The Assembler&lt;/h2&gt;
+&lt;p&gt;The Assembler processes a directory containing all production builds of all known documentation.  It does not yet exist.&lt;/p&gt;
+&lt;/div&gt;&lt;/div&gt;</description><guid>http://getnikola.com/posts/init-anerist.html</guid><pubDate>Sun, 15 Mar 2015 14:31:44 GMT</pubDate></item></channel></rss>
