@@ -18,7 +18,7 @@ Anerist is a collection of Python scripts for buildbot.  It processes documentat
 Builder roles
 ================
 
-For each known markup format, Anerist provides three types of BuildFactories for processing.
+For each known markup format, Anerist provides four types of BuildFactories for processing.
 
 Validation
 ------------
@@ -30,9 +30,15 @@ Integration
 -------------
 An integration factory pulls translations from a centralized translation platform like Zanata and tests them.  If the translated document is built successfully, the translations are committed to version control.
 
+Identification
+----------------
+Metadata that describes the work is extracted from the content.  This information is used during the Assembly process to determine site structure present the document.
+
 Production
 ------------
 A production factory builds the content in a format designed for web viewing and pushes it to a central location for later processing by the Assembler.
+
+
 
 The Assembler
 ===============
