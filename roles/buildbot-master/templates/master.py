@@ -198,6 +198,9 @@ from buildbot.steps.transfer import DirectoryUpload
 from buildbot.process.properties import Interpolate
 from datetime import datetime
 
+# this should work
+from anerist.buildsteps import *
+
 def _publican_publisher_factory_step_generator(guide):
     anon_url, ssh_url = _guide_git_url(guide)
     publican_factory_steps = [

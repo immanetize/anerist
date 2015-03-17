@@ -5,9 +5,13 @@
   hosts: buildbot-masters
   roles: 
     - buildbot-master
+  tasks:
+    - include: "../../tasks/anerist.yml"
 - name: create buildbot slaves
   handlers:
     - include: ../../handlers/buildbot-handlers.yml
   hosts: buildbot-slaves
   roles: 
     - buildbot-slaves
+  tasks:
+    - include: "../../tasks/anerist.yml"
