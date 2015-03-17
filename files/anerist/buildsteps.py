@@ -8,12 +8,15 @@ class PublicanBuild(ShellCommand):
     flunkOnFailure = 1
     description = ["building"]
     descriptionDone = ["build complete"]
-    command= [
+    def __init__(self, langs=["all"]):
+        ShellCommand.__init__(self, **kwargs)
+        command= [
             "/usr/bin/publican",
             "build",
             "--langs %s" % ','.join(langs),\
             "--formats %s" % ",".join(formats)
-            ]
+        ]
+        self.setCommand(command)
 
 class ZanataPublicanPull(ShellCommand):
     name = "zanata pull"
@@ -21,13 +24,18 @@ class ZanataPublicanPull(ShellCommand):
     flunkOnFailure = 1
     description = ["pulling translations from Zanata"]
     descriptionDone = ["translations refreshed"]
-    command = [
+    def __init__(self, zanata_username=None, zanata_api_key=None):
+        if zanata_username is None or zanata_api_key is None:
+            config.error("zanata_username and zanata_api_key are required")
+        shellCommand.__init__(self, **kwargs)
+        command = [
             "/usr/bin/zanata",
             "--username %s" % zanata_username,
             "--apikey %s" % zanata_api_key,
             "--transdir ./%s/" % lang,
             "--lang %s" % lang
             ]
+        self.setCommand(command)
             
 class PublicanClean(ShellCommand):    
     name = "publican clean"
