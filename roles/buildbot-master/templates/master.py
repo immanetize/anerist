@@ -227,7 +227,7 @@ def _publican_langtest_factory_step_generator(guide, lang):
     zanata_pull_command = [
             "/usr/bin/zanata",
             "--username immanetize",
-            "--apikey 14383a7c8ccc3126c1622c50c0978410",
+            "--apikey {{  ansible_local.buildbot.pass.zanata_api_key }}",
             "--transdir ./%s./" % lang,
             "--lang %s" % lang
             ]
