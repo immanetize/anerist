@@ -2,9 +2,8 @@
   yum: name={{ item }} state=present
   with_items:
     - git
-    - zanata
     - buildbot-slave
-    - python-zanata
+    - zanata-python-client
     - publican
     - publican-fedora
 - name: create buildslave user
