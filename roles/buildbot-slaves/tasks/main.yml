@@ -1,10 +1,12 @@
 - name: install buildbot slave packages
-  yum: name={{ item }} state=latest
+  yum: name={{ item }} state=present
   with_items:
     - git
     - zanata
     - buildbot-slave
-  yum: name=git state=latest
+    - python-zanata
+    - publican
+    - publican-fedora
 - name: create buildslave user
   user: comment="buildbot slave user" name="buildbot"
 - name: Copy buildslave service definition
@@ -29,8 +31,3 @@
 - name: start buildbot slave service
   service: name=buildbot-slave@docs-site enabled=yes state=started
 
-#    Docs specific things
-- name: install publican
-  yum: name=publican state=latest
-- name: install publican brand
-  yum: name=publican-fedora state=latest

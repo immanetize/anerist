@@ -1,7 +1,8 @@
 - name: Install buildbot master packages.
-  yum: name=buildbot-master state=present
-- name: Install git
-  yum: name=git state=present
+  yum: name={{ item }} state=present
+  with_items:
+    - buildbot-master
+    - git
 - name: create buildslave user
   user: comment="buildbot user" name="buildbot"
 - name: Copy buildbot service definition
@@ -25,3 +26,4 @@
   template: src=master.py dest=/srv/buildbot/docs-site/master.cfg owner=buildbot group=buildbot
   notify:
     - restart buildbot master
+  
