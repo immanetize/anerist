@@ -15,9 +15,9 @@ c = BuildmasterConfig = {}
 # slave name and password must be configured on the slave.
 from buildbot.buildslave import BuildSlave
 c['slaves'] = [
-	BuildSlave("buildslave01.home.randomuser.org", "{{ ansible_local.buildbot.pass.buildslave_pass }}"),
-	BuildSlave("buildslave02.home.randomuser.org", "{{ ansible_local.buildbot.pass.buildslave_pass }}"),
-	BuildSlave("buildslave03.home.randomuser.org", "{{ ansible_local.buildbot.pass.buildslave_pass }}"),
+        {% for host in groups['buildbot-slaves'] %}    
+	    BuildSlave("{{ host }}", "{{ ansible_local.buildbot.pass.buildslave_pass }}"),
+        {% endfor %}
 	]
 
 # 'protocols' contains information about protocols which master will use for
