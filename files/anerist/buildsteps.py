@@ -9,6 +9,20 @@ class PublicanBuild(ShellCommand):
     description = ["building"]
     descriptionDone = ["build complete"]
     def __init__(self, langs=["en-US"], formats=["html-single"], **kwargs):
+        valid_publican_formats = [
+                "drupal-book",
+                "eclipse",
+                "epub",
+                "html",
+                "html-desktop",
+                "html-single",
+                "man",
+                "pdf",
+                "txt",
+                "xml"
+                ]
+        if not all(output_format in valid_publican_formats for x in formats):
+            config.error("Unknown or invalid publican output format specified")
         command= [
             "/usr/bin/publican",
             "build",
@@ -25,23 +39,34 @@ class PublicanBuild(ShellCommand):
 
 
 class ZanataPublicanPull(ShellCommand):
-    name = "zanata pull"
+    name = "zanata_pull"
     haltOnFailure = 1
     flunkOnFailure = 1
     description = ["pulling translations from Zanata"]
     descriptionDone = ["translations refreshed"]
-    def __init__(self, zanata_username=None, zanata_api_key=None):
+    # zanata-python-client probably supports comma separated lists of languages but! 
+    # we don't like that for publican POs because we also must declare transdir
+    def __init__(self, zanata_username=None, zanata_api_key=None, lang=None):
         if zanata_username is None or zanata_api_key is None:
             config.error("zanata_username and zanata_api_key are required")
+        if langs is None:
+            config.error("lang must be declared to pull translations")
+            
         shellCommand.__init__(self, **kwargs)
         command = [
             "/usr/bin/zanata",
-            "--username %s" % zanata_username,
-            "--apikey %s" % zanata_api_key,
-            "--transdir ./%s/" % lang,
-            "--lang %s" % lang
+            "--username",
+            zanata_username,
+            "--apikey",
+            zanata_api_key,
+            "--transdir",
+            "./%s/" % lang,
+            "--lang",
+            lang
             ]
         self.setCommand(command)
+    
+        
             
 class PublicanClean(ShellCommand):    
     name = "publican clean"
