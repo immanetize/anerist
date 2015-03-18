@@ -18,7 +18,7 @@ Anerist is a collection of Python scripts for buildbot.  It processes documentat
 Builder roles
 ================
 
-For each known markup format, Anerist provides four types of BuildFactories for processing.
+For each known markup format, Anerist provides four types of BuildSteps for processing
 
 Validation
 ------------
