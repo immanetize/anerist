@@ -209,11 +209,15 @@ def _publican_publisher_factory_step_generator(guide):
                 repourl=anon_url,
                 mode='incremental'
                 ),
-            ShellCommand(
-                name = "%s build" % guide,
-                command=["publican", "build", "--langs=all", "--formats=html,html-single,pdf,epub"],
-                haltOnFailure=True
+            PublicanBuild(
+                langs = ["en-US"],
+                formats = ["html-single"]
                 ),
+#            ShellCommand(
+#                name = "%s build" % guide,
+#                command=["publican", "build", "--langs=all", "--formats=html,html-single,pdf,epub"],
+#                haltOnFailure=True
+#                ),
             DirectoryUpload(
                 slavesrc="tmp",
                 masterdest=Interpolate(
@@ -235,12 +239,12 @@ def _publican_langtest_factory_step_generator(guide, lang):
             "--lang %s" % lang
             ]
     today_stamp = datetime.now().utcnow().strftime("%Y-%m-%d")
-    publican_build_command = [
-            "/usr/bin/publican",
-            "build",
-            "--langs %s" % lang,
-            "--formats html"
-            ]
+#    publican_build_command = [
+#            "/usr/bin/publican",
+#            "build",
+#            "--langs %s" % lang,
+#            "--formats html"
+#            ]
     git_commit_command = [
             "/usr/bin/git",
             "commit",
@@ -258,11 +262,16 @@ def _publican_langtest_factory_step_generator(guide, lang):
                 command = zanata_pull_command,
                 haltOnFailure=True
                 ),
-            ShellCommand(
-                name = "test_%s_build" % lang,
-                command = publican_build_command,
-                haltOnFailure=True
+            PublicanBuild(
+                langs = ["en-US"],
+                formats = ["html-single"]
                 ),
+                
+#            ShellCommand(
+#                name = "test_%s_build" % lang,
+#                command = publican_build_command,
+#                haltOnFailure=True
+#                ),
             ShellCommand(
                 name = "publican_clean",
                 command = ["/usr/bin/publican", "clean"]
@@ -284,11 +293,10 @@ def _publican_langtest_factory_step_generator(guide, lang):
 
 from buildbot.config import BuilderConfig
 
-lan_buildslaves = [
-        "buildslave01.home.randomuser.org",
-  	    "buildslave02.home.randomuser.org",
-        "buildslave03.home.randomuser.org"
-        ]
+lan_buildslaves = []
+{% for host in groups['buildbot-slaves'] %}
+lan_buildslaves.append("{{ host }}")
+{% endfor %}
 
 all_publican_builders = []
 
@@ -328,29 +336,6 @@ for guide in guide_list:
         builderNames=[guide_publisher],
         treeStableTimer=None,
         ))
-
-    
-for guide in ["release-notes"]:
-    for lang in language_list:
-        publican_lang_test_builder = "%s-%s-integrator" % (guide, lang)
-        publican_factory[publican_lang_test_builder]=BuildFactory(
-                _publican_langtest_factory_step_generator(guide, lang)
-                )
-        c['builders'].append(
-                BuilderConfig(
-                    name=publican_lang_test_builder,
-                    slavenames=lan_buildslaves,
-                    factory=publican_factory[publican_lang_test_builder]
-                    )
-                )
-        c['schedulers'].append(AnyBranchScheduler(
-                name=publican_lang_test_builder,
-                builderNames=[publican_lang_test_builder],
-                change_filter=filtered_branches,
-                treeStableTimer=None
-                )
-            )
-                       
 
 c['schedulers'].append(ForceScheduler(
                             name="PanicRebuild",

@@ -3,20 +3,26 @@ from buildbot.process.factory import *
 
 # Command Classes
 class PublicanBuild(ShellCommand):
-    name = "publican build",
+    name = "publican_build"
     haltOnFailure = 1
     flunkOnFailure = 1
     description = ["building"]
     descriptionDone = ["build complete"]
-    def __init__(self, langs=["all"]):
-        ShellCommand.__init__(self, **kwargs)
+    def __init__(self, langs=["en-US"], formats=["html-single"], **kwargs):
         command= [
             "/usr/bin/publican",
             "build",
-            "--langs %s" % ','.join(langs),\
-            "--formats %s" % ",".join(formats)
-        ]
+            "--langs",
+            ','.join(langs),\
+            "--formats",
+            ",".join(formats)
+            ]
+        ShellCommand.__init__(self, **kwargs)
         self.setCommand(command)
+    def start(self):
+        ShellCommand.start(self)
+
+
 
 class ZanataPublicanPull(ShellCommand):
     name = "zanata pull"
