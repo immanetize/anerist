@@ -1,32 +1,22 @@
 # -*- python -*-
 # ex: set syntax=python:
 
-# This is a sample buildmaster config file. It must be installed as
-# 'master.cfg' in your buildmaster's base directory.
-
-# This is the dictionary that the buildmaster pays attention to. We also use
-# a shorter alias to save typing.
 c = BuildmasterConfig = {}
 
 ####### BUILDSLAVES
-
-# The 'slaves' list defines the set of recognized buildslaves. Each element is
-# a BuildSlave object, specifying a unique slave name and password.  The same
-# slave name and password must be configured on the slave.
 from buildbot.buildslave import BuildSlave
 c['slaves'] = [
         {% for host in groups['buildbot-slaves'] %}    
 	    BuildSlave("{{ host }}", "{{ ansible_local.buildbot.pass.buildslave_pass }}"),
         {% endfor %}
 	]
-
-# 'protocols' contains information about protocols which master will use for
-# communicating with slaves.
-# You must define at least 'port' option that slaves could connect to your master
-# with this protocol.
-# 'port' must match the value configured into the buildslaves (with their
-# --master option)
 c['protocols'] = {'pb': {'port': 9989}}
+
+from anerist.helpers import PublicanHelpers
+from anerist.helpers import FedoraHelpers
+
+jeff = PublicanHelpers()
+mac = FedoraHelpers()
 
 latest_release = 22
 oldest_release = 19
@@ -36,112 +26,12 @@ for release in release_range:
     published_branches.append("f%s" % release)
     published_branches.append("F%s" % release)
 
-language_list = [
-        "ar-SA",
-        "as-IN",
-        "ast-ES",
-        "bn-IN",
-        "bs-BA",
-        "bg-BG",
-        "ca-ES",
-        "zh-CN",
-        "zh-HK",
-        "zh-TW",
-        "cs-CZ",
-        "da-DK",
-        "fi-FI",
-        "fr-FR",
-        "de-DE",
-        "el-GR",
-        "gu-IN",
-        "he-IL",
-        "hi-IN",
-        "hr-HR",
-        "hu-HU",
-        "id-ID",
-        "ia",
-        "is-IS",
-        "it-IT",
-        "ja-JP",
-        "kn-IN",
-        "ko-KR",
-        "lv-LT",
-        "lv-LV",
-        "ml-IN",
-        "mr-IN",
-        "nb-NO",
-        "nl-NL",
-        "or-IN",
-        "pa-IN",
-        "fa-IR",
-        "pl-PL",
-        "pt-PT",
-        "pt-BR",
-        "ro-RO",
-        "ru-RU",
-        "sr-RS",
-        "sr-Latn-RS",
-        "si-LK",
-        "sk-SK",
-        "es-ES",
-        "sv-SE",
-        "ta-IN",
-        "te-IN",
-        "uk-UA",
-        "de-CH",
-        "th-TH"
-        ]
+language_list = jeff.valid_langs()
 
-guide_list = [
-	"accessibility-guide",
-	"amateur-radio-guide",
-	"anaconda-addon-development-guide",
-	"ARM-getting-started-guide",
-	"cloud-guide",
-	"deployment-guide",
-	"docs-beginner",
-	"docsite-publican",
-	"documentation-guide",
-	"elections-guide",
-	"fedora-cookbook",
-	"fedora-server-guide",
-	"firewall-guide",
-	"freeipa-guide",
-	"installation-quick-start-guide",
-	"install-guide",
-	"multiboot-guide",
-	"musicians-guide",
-	"networking-guide",
-	"openssh-guide",
-	"packagers-guide",
-	"power-management-guide",
-	"readme-burning-isos",
-	"release-notes",
-	"resource-management-guide",
-	"respin-guide",
-	"robotics-guide",
-	"rpm-guide",
-	"secure-ruby-development-guide",
-	"securityguide",
-	"selinux-guide",
-	"selinux-user-guide",
-	"software-collections-guide",
-	"software-management-guide",
-	"storage-administration-guide",
-	"system-administrators-guide",
-	"system-administrators-reference-guide",
-	"technical-notes",
-	"translation-quick-start-guide",
-	"uefi-secure-boot-guide",
-	"user-guide",
-	"virtualization-administration-guide",
-	"virtualization-deployment-and-administration-guide",
-	"virtualization-deployment-guide",
-	"virtualization-getting-started-guide",
-	"virtualization-guide",
-	"virtualization-security-guide",
-	"writers-style-guide",
-]
+all_publican_guides = mac.all_publican_guides()
+deprecated_publican_guides = mac.deprecated_publican_guides()
+
+guide_list = list(set(all_publican_guides).difference(set(deprecated_publican_guides)))
 
 def _guide_git_url(guide):
     anon_url = "https://git.fedorahosted.org/git/docs/%s.git" % guide

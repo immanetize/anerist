@@ -21,7 +21,7 @@ class PublicanBuild(ShellCommand):
                 "txt",
                 "xml"
                 ]
-        if not all(output_format in valid_publican_formats for x in formats):
+        if not all(output_format in valid_publican_formats for output_format in formats):
             config.error("Unknown or invalid publican output format specified")
         command= [
             "/usr/bin/publican",

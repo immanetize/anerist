@@ -3,6 +3,6 @@
 - name: copy anerist files
   copy: src={{ item }} dest=/usr/lib/python2.7/site-packages/anerist/
   with_items:
+    - "../files/anerist/__init__.py"
     - "../files/anerist/buildsteps.py"
-#- name: make python imports work
-# file: state=touch path=/usr/lib/python2.7/site-packages/anerist/__init__.py
+    - "../files/anerist/helpers.py"
