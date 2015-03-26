@@ -1,0 +1,21 @@
+title: Example Document
+stub: A representation of a document description standard.
+abstract: >
+  This could be an example document.  
+  It could explain example documents.  
+  It could use examples to explain what a document is. 
+  It is none of these.
+taxonomy:
+  theme: Contributions
+  scope: Documentation
+  track: Metadata
+  project:  anerist
+tags:
+- yaml
+- metadata
+- proposal
+- standard
+author:
+- Carlton Bentleby
+- Vizek Glibensky
+- Obvious Pseudonym
