@@ -13,3 +13,7 @@
 - name: restart buildbot slave
   service: name=buildbot-slave@docs-site state=restarted
 
+- name: refresh anerist
+  command: chdir=/root/anerist /usr/bin/python setup.py install
+
+

@@ -1,8 +1,10 @@
-- name: create site-packages dir
-  file: state=directory path=/usr/lib/python2.7/site-packages/anerist
-- name: copy anerist files
-  copy: src={{ item }} dest=/usr/lib/python2.7/site-packages/anerist/
+- name: install anerist dependencies
+  yum: name={{ item }} state=present
   with_items:
-    - "../files/anerist/__init__.py"
-    - "../files/anerist/buildsteps.py"
-    - "../files/anerist/helpers.py"
+    - python-beautifulsoup4
+    - PyYAML
+    - python-setuptools    
+- name: copy anerist files
+  copy: src=../files/anerist dest=/root/
+  notify:
+    - refresh anerist
