@@ -17,6 +17,11 @@ The master branch is mostly maintained via `ghp-import -b master files/anerist` 
 
 Anerist is a collection of Python scripts for buildbot.  It processes documentation of a variety of formats and generates a website frontend for browsing all processed docs.
 
+Command line utility
+======================
+The `/usr/bin/anerist` utility has some functions for processing documents.  Buildbot likes buildsteps to be executable commands, not raw python code.
+
+
 Builder roles
 ================
 
