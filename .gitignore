@@ -2,3 +2,6 @@
 *test*
 private/
 *.pyc
+files/anerist/build
+files/anerist/dist
+files/anerist/anerist.egg-info
