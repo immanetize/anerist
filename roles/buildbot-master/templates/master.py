@@ -1,6 +1,12 @@
 # -*- python -*-
 # ex: set syntax=python:
 
+from buildbot.schedulers.basic import SingleBranchScheduler
+from buildbot.schedulers.basic import AnyBranchScheduler
+from buildbot.schedulers.forcesched import ForceScheduler
+from buildbot.changes.filter import ChangeFilter
+from buildbot.scheduler import Nightly
+
 c = BuildmasterConfig = {}
 
 ####### BUILDSLAVES
@@ -17,10 +23,13 @@ from anerist.helpers import FedoraHelpers
 
 jeff = PublicanHelpers()
 mac = FedoraHelpers()
-
 published_branches = mac.release_tracker()
-
+published_branches.append('master')
 guide_list = mac.published_publican_guides()
+filtered_branches = ChangeFilter(
+        branch_fn = published_branches
+        )
+translated_langs = jeff.valid_langs()
 
 def _guide_git_url(guide):
     anon_url = "https://git.fedorahosted.org/git/docs/%s.git" % guide
@@ -30,44 +39,20 @@ def _guide_git_url(guide):
   
 ####### CHANGESOURCES
 
-# the 'change_source' setting tells the buildmaster how it should find out
-# about source code changes.  Here we point to the buildbot clone of pyflakes.
-
 from buildbot.changes.gitpoller import GitPoller
 import random
 
 c['change_source'] = []
-
 for guide in guide_list:
     anon_url, ssh_url = _guide_git_url(guide)
     c['change_source'].append(GitPoller(
         anon_url, 
         workdir=guide, 
-        branches=published_branches.append("master"),
+        branches=published_branches,
         pollinterval=random.randint(300,600)
         ))
 
-####### SCHEDULERS
-
-# Configure the Schedulers, which decide how to react to incoming changes.  In this
-# case, just kick off a 'runtests' build
-
-from buildbot.schedulers.basic import SingleBranchScheduler
-from buildbot.schedulers.basic import AnyBranchScheduler
-from buildbot.schedulers.forcesched import ForceScheduler
-from buildbot.changes.filter import ChangeFilter
-from buildbot.scheduler import Nightly
-
-filtered_branches = ChangeFilter(
-        branch_fn = published_branches
-        )
-
-
 ####### BUILDERS
-
-# The 'builders' list defines the Builders, which tell Buildbot how to perform a build:
-# what steps, and which slaves can execute them.  Note that any particular build will
-# only take place on one slave.
 
 from buildbot.process.factory import BuildFactory
 from buildbot.steps.source.git import Git
@@ -76,11 +61,9 @@ from buildbot.process.factory import Publican
 from buildbot.steps.transfer import DirectoryUpload
 from buildbot.process.properties import Interpolate
 from datetime import datetime
-
-# this should work
 from anerist.buildsteps import *
 
-def _publican_publisher_factory_step_generator(guide):
+def _publican_publisher_factory_step_generator(guide, langs=["en-US"], formats=["html-single"]):
     anon_url, ssh_url = _guide_git_url(guide)
     publican_factory_steps = [
             Git(
@@ -89,8 +72,8 @@ def _publican_publisher_factory_step_generator(guide):
                 mode='incremental'
                 ),
             PublicanBuild(
-                langs = ["en-US"],
-                formats = ["html-single"]
+                langs = langs,
+                formats = formats
                 ),
             DirectoryUpload(
                 slavesrc="tmp",
@@ -102,7 +85,7 @@ def _publican_publisher_factory_step_generator(guide):
             ]
     return publican_factory_steps
 
-def _publican_langtest_factory_step_generator(guide, lang):
+def _publican_langtest_factory_step_generator(guide, lang, commit=False):
     anon_url, ssh_url = _guide_git_url(guide)
     todaystamp = datetime.now().utcnow().strftime("%Y-%m-%d")
     zanata_pull_command = [
@@ -137,7 +120,10 @@ def _publican_langtest_factory_step_generator(guide, lang):
             ShellCommand(
                 name = "publican_clean",
                 command = ["/usr/bin/publican", "clean"]
-                ),
+                )
+            ]
+    if commit:
+        lang_integrator_steps.extend([
             ShellCommand(
                 name = "prep_commit",
                 command = ["/usr/bin/git", "add", "."]
@@ -150,7 +136,7 @@ def _publican_langtest_factory_step_generator(guide, lang):
                 name = "push_commits",
                 command = "git push"
                 )
-            ]
+            ])
     return lang_integrator_steps
 
 from buildbot.config import BuilderConfig
@@ -160,8 +146,8 @@ lan_buildslaves = []
 lan_buildslaves.append("{{ host }}")
 {% endfor %}
 
-all_publican_builders = []
-
+all_publican_builders = [] 
+all_translation_builders = {}
 c['schedulers'] = []
 #c['schedulers'].append(SingleBranchScheduler(
 #                            name="all",
@@ -198,11 +184,43 @@ for guide in guide_list:
         builderNames=[guide_publisher],
         treeStableTimer=None,
         ))
+    for lang in translated_langs:
+        lang_tester = "%s_%s_translator" % (guide, lang)
+        all_translation_builders.setdefault(lang, []).append(lang_tester)
+        publican_factory[lang_tester] = BuildFactory(
+                _publican_publisher_factory_step_generator(
+                    guide, 
+                    langs=[lang], 
+                    formats=["html-single"]
+                    )
+                )
+        c['builders'].append(
+                BuilderConfig(
+                    name = lang_tester,
+                    slavenames=lan_buildslaves,
+                    factory=publican_factory[lang_tester]
+                    )
+                )
+        
+        
+for lang in translated_langs:
+    for branch in published_branches:
+        c['schedulers'].append(Nightly(
+            name = "%s %s Translation Validator" % (branch, lang),
+            branch = branch,
+            builderNames = all_translation_builders[lang],
+            hour = random.randint(2, 5),
+            minute = random.randint(0,59)
+            )
+        )
 
+
+
+    
 c['schedulers'].append(ForceScheduler(
-                            name="PanicRebuild",
-                            builderNames=all_publican_builders
-                            ))
+        name="PanicRebuild",
+        builderNames=all_publican_builders
+        ))
 
 ####### STATUS TARGETS
 
