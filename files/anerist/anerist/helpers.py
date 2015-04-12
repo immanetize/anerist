@@ -152,6 +152,7 @@ class FedoraHelpers():
     def deprecated_publican_guides(self):
         guide_list = [
             "user-guide",
+            "docsite-publican",
             "openssh-guide",
             "software-collections-guide",
             "software-management-guide",
@@ -178,7 +179,6 @@ class FedoraHelpers():
             "readme-live-image",
             "deployment-guide",
             "virtualization-deployment-and-administration-guide",
-            "firewall-guide",
             "selinux-user-guide"
             ]
         return guide_list

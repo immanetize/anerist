@@ -41,7 +41,7 @@ c['change_source'] = []
 for guide in guide_list:
     anon_url, ssh_url = _guide_git_url(guide)
     c['change_source'].append(GitPoller(
- ou       anon_url, 
+        anon_url, 
         workdir=guide, 
         branches=published_branches.append("master"),
         pollinterval=random.randint(300,600)
@@ -92,11 +92,6 @@ def _publican_publisher_factory_step_generator(guide):
                 langs = ["en-US"],
                 formats = ["html-single"]
                 ),
-#            ShellCommand(
-#                name = "%s build" % guide,
-#                command=["publican", "build", "--langs=all", "--formats=html,html-single,pdf,epub"],
-#                haltOnFailure=True
-#                ),
             DirectoryUpload(
                 slavesrc="tmp",
                 masterdest=Interpolate(
@@ -118,12 +113,6 @@ def _publican_langtest_factory_step_generator(guide, lang):
             "--lang %s" % lang
             ]
     today_stamp = datetime.now().utcnow().strftime("%Y-%m-%d")
-#    publican_build_command = [
-#            "/usr/bin/publican",
-#            "build",
-#            "--langs %s" % lang,
-#            "--formats html"
-#            ]
     git_commit_command = [
             "/usr/bin/git",
             "commit",
@@ -145,12 +134,6 @@ def _publican_langtest_factory_step_generator(guide, lang):
                 langs = ["en-US"],
                 formats = ["html-single"]
                 ),
-                
-#            ShellCommand(
-#                name = "test_%s_build" % lang,
-#                command = publican_build_command,
-#                haltOnFailure=True
-#                ),
             ShellCommand(
                 name = "publican_clean",
                 command = ["/usr/bin/publican", "clean"]
@@ -223,10 +206,6 @@ c['schedulers'].append(ForceScheduler(
 
 ####### STATUS TARGETS
 
-# 'status' is a list of Status Targets. The results of each build will be
-# pushed to these targets. buildbot/status/*.py has a variety to choose from,
-# including web pages, email senders, and IRC bots.
-
 c['status'] = []
 
 from buildbot.status import html
@@ -254,13 +233,6 @@ c['status'].append(html.WebStatus(http_port=8010, authz=authz_cfg))
 
 c['title'] = "Fedora Docs Project Website Constructor"
 c['titleURL'] = "https://docs.fedoraproject.org"
-
-# the 'buildbotURL' string should point to the location where the buildbot's
-# internal web server (usually the html.WebStatus page) is visible. This
-# typically uses the port number set in the Waterfall 'status' entry, but
-# with an externally-visible host name which the buildbot cannot figure out
-# without some help.
-
 c['buildbotURL'] = "http://buildbot.home.randomuser.org:8010/"
 
 ####### DB URL
