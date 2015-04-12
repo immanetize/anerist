@@ -1,4 +1,10 @@
 from pkgdb2client import PkgDB
+import git
+import hashlib
+import os
+import shutil
+import errno
+import sys
 
 class PublicanHelpers():
     def valid_formats(self):
@@ -17,16 +23,16 @@ class PublicanHelpers():
         return valid_formats
     def valid_langs(self):
         language_list = [
-            "ar-SA",
-            "as-IN",
-            "ast-ES",
-            "bn-IN",
-            "bs-BA",
-            "bg-BG",
-            "ca-ES",
-            "zh-CN",
-            "zh-HK",
-            "zh-TW",
+            "ar-sa",
+            "as-in",
+            "ast-es",
+            "bn-in",
+            "bs-ba",
+            "bg-bg",
+            "ca-es",
+            "zh-cn",
+            "zh-hk",
+            "zh-tw",
             "cs-CZ",
             "da-DK",
             "fi-FI",
@@ -79,6 +85,61 @@ class FedoraHelpers():
         # ssh_url = "ssh://git.fedorahosted.org/git/docs/%s.git" % guide
         ssh_url = "ssh://buildbot@lemuria.home.randomuser.org:/srv/projects/docs/guides/%s" % guide
         return anon_url, ssh_url
+    def get_remote_branches(self, guide=None, remote=None):
+        from git import Repo
+        if guide is None and remote is None:
+            print("""
+             remote must be provided.  You can provide a guide name, and the function
+             will generate a fedorahosted url, but at least one of 'guide' or 'remote'
+             must be passed.
+             """)
+            sys.exit(1)
+        elif guide and not remote:
+            remote, garbage = self.guide_git_url(guide)
+        elif not guide and remote:
+            # try to parse out what the local directory name would be
+            guide = self._reponame_extractor(remote)
+        # this needs to be smarter    
+        repodir = "%s/%s" % (os.getcwd(), guide)
+        if not os.path.exists(repodir):
+            repo_hash = hashlib.md5()
+            repo_hash.update(remote)
+            repodir = '/tmp/anerist/%s-fetcher' % repo_hash.hexdigest()
+            if os.path.exists(repodir):
+                try:
+                    shutil.rmtree(repodir)
+                except OSError:
+                    print("unable to clean up temporary directory for %s, %s" % (guide, repodir))
+            self.mkdir_p(repodir)
+            repo = Repo.init(repodir)
+            origin = repo.create_remote('origin', remote)
+            assert origin == repo.remotes.origin == repo.remotes['origin']
+        else:
+            repo = Repo(repodir)
+            assert not repo.bare
+        git = repo.git
+        remote_heads = git.ls_remote("--heads").split()
+        remote_heads = [x for x in remote_heads if x.startswith('refs/heads/f')]
+        for index, head in enumerate(remote_heads):
+            remote_heads[index] = head.replace('refs/heads/', '')
+        published_branches = self.release_tracker()
+        published_heads = set(remote_heads).intersection(set(published_branches))
+        return list(published_heads)
+
+    def mkdir_p(self, path):
+        # thanks tzot, http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
+        try:
+                os.makedirs(path)
+        except OSError as exc: # Python >2.5
+            if exc.errno == errno.EEXIST and os.path.isdir(path):
+                pass
+            else: raise
+    def _reponame_extractor(self, remote):
+        reponame = os.path.basename(remote)
+        if reponame.endswith('.git'):
+            reponame = reponame[:-len('.git')]
+        return reponame
+    
     def release_tracker(self):
         release_checker = PkgDB()
         published_releases = []
