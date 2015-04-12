@@ -114,6 +114,7 @@ class FedoraHelpers():
             repo = Repo.init(repodir)
             origin = repo.create_remote('origin', remote)
             assert origin == repo.remotes.origin == repo.remotes['origin']
+            cleanup = True
         else:
             repo = Repo(repodir)
             assert not repo.bare
@@ -124,7 +125,9 @@ class FedoraHelpers():
             remote_heads[index] = head.replace('refs/heads/', '')
         published_branches = self.release_tracker()
         published_heads = set(remote_heads).intersection(set(published_branches))
-        return list(published_heads)
+        if cleanup: 
+            shutil.rmtree(repodir)
+        return list(published_heads).append('master')
 
     def mkdir_p(self, path):
         # thanks tzot, http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
