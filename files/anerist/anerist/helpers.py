@@ -72,6 +72,15 @@ class PublicanHelpers():
         return language_list
 
 class FedoraHelpers():
+    def release_tracker(self, target):
+        eol_release = 19
+        next_release = 22
+        if target == 'oldest':
+            return eol_release
+        elif target == 'newest':
+            return next_release
+        else:
+            return None
     def all_publican_guides(self):
         guide_list = [
                 "user-guide",

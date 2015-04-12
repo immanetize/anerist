@@ -18,8 +18,8 @@ from anerist.helpers import FedoraHelpers
 jeff = PublicanHelpers()
 mac = FedoraHelpers()
 
-latest_release = 22
-oldest_release = 19
+newest_release = mac.release_tracker('newest')
+oldest_release = mac.release_tracker('oldest')
 release_range = range(oldest_release, latest_release)
 published_branches = []
 for release in release_range:
@@ -52,7 +52,7 @@ c['change_source'] = []
 for guide in guide_list:
     anon_url, ssh_url = _guide_git_url(guide)
     c['change_source'].append(GitPoller(
-        anon_url, 
+ ou       anon_url, 
         workdir=guide, 
         branches=published_branches.append("master"),
         pollinterval=random.randint(300,600)
