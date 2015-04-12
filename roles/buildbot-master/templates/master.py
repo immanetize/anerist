@@ -18,13 +18,7 @@ from anerist.helpers import FedoraHelpers
 jeff = PublicanHelpers()
 mac = FedoraHelpers()
 
-newest_release = mac.release_tracker('newest')
-oldest_release = mac.release_tracker('oldest')
-release_range = range(oldest_release, latest_release)
-published_branches = []
-for release in release_range:
-    published_branches.append("f%s" % release)
-    published_branches.append("F%s" % release)
+published_branches = mac.release_tracker()
 
 language_list = jeff.valid_langs()
 

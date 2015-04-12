@@ -1,3 +1,5 @@
+from pkgdb2client import PkgDB
+
 class PublicanHelpers():
     def valid_formats(self):
         valid_formats = [
@@ -72,15 +74,21 @@ class PublicanHelpers():
         return language_list
 
 class FedoraHelpers():
-    def release_tracker(self, target):
-        eol_release = 19
-        next_release = 22
-        if target == 'oldest':
-            return eol_release
-        elif target == 'newest':
-            return next_release
-        else:
-            return None
+    def release_tracker(self):
+        release_checker = PkgDB()
+        published_releases = []
+        a = release_checker.get_collections('f*', clt_status=["Active", "EOL", "Under Development"])
+        eol_releases = []
+        for release in a['collections']:
+            if release['status'] == "Active" or release["status"] == "Under Development":
+                published_releases.append(release['branchname'])
+            elif release['status'] == "EOL":
+                eol_releases.append(int(release['version']))
+        for release in a['collections']:
+            if int(release['version']) == max(eol_releases):
+                published_releases.append(release['branchname'])
+        return published_releases
+
     def all_publican_guides(self):
         guide_list = [
                 "user-guide",

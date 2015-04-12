@@ -3,7 +3,8 @@
   with_items:
     - python-beautifulsoup4
     - PyYAML
-    - python-setuptools    
+    - python-setuptools
+    - packagedb-cli
 - name: copy anerist files
   copy: src=../files/anerist dest=/root/
   notify:
