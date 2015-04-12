@@ -74,6 +74,11 @@ class PublicanHelpers():
         return language_list
 
 class FedoraHelpers():
+    def guide_git_url(self, guide):
+        anon_url = "https://git.fedorahosted.org/git/docs/%s.git" % guide
+        # ssh_url = "ssh://git.fedorahosted.org/git/docs/%s.git" % guide
+        ssh_url = "ssh://buildbot@lemuria.home.randomuser.org:/srv/projects/docs/guides/%s" % guide
+        return anon_url, ssh_url
     def release_tracker(self):
         release_checker = PkgDB()
         published_releases = []

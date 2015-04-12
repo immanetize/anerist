@@ -31,12 +31,6 @@ filtered_branches = ChangeFilter(
         )
 translated_langs = jeff.valid_langs()
 
-def _guide_git_url(guide):
-    anon_url = "https://git.fedorahosted.org/git/docs/%s.git" % guide
-#    ssh_url = "ssh://git.fedorahosted.org/git/docs/%s.git" % guide
-    ssh_url = "ssh://buildbot@lemuria.home.randomuser.org:/srv/projects/docs/guides/%s" % guide
-    return anon_url, ssh_url
-  
 ####### CHANGESOURCES
 
 from buildbot.changes.gitpoller import GitPoller
@@ -44,7 +38,7 @@ import random
 
 c['change_source'] = []
 for guide in guide_list:
-    anon_url, ssh_url = _guide_git_url(guide)
+    anon_url, ssh_url = mac.guide_git_url(guide)
     c['change_source'].append(GitPoller(
         anon_url, 
         workdir=guide, 
@@ -64,7 +58,7 @@ from datetime import datetime
 from anerist.buildsteps import *
 
 def _publican_publisher_factory_step_generator(guide, langs=["en-US"], formats=["html-single"]):
-    anon_url, ssh_url = _guide_git_url(guide)
+    anon_url, ssh_url = mac.guide_git_url(guide)
     publican_factory_steps = [
             Git(
                 name = "%s fetch" % guide,
@@ -86,7 +80,7 @@ def _publican_publisher_factory_step_generator(guide, langs=["en-US"], formats=[
     return publican_factory_steps
 
 def _publican_langtest_factory_step_generator(guide, lang, commit=False):
-    anon_url, ssh_url = _guide_git_url(guide)
+    anon_url, ssh_url = mac.guide_git_url(guide)
     todaystamp = datetime.now().utcnow().strftime("%Y-%m-%d")
     zanata_pull_command = [
             "/usr/bin/zanata",
