@@ -24,6 +24,7 @@ from anerist.helpers import FedoraHelpers
 jeff = PublicanHelpers()
 mac = FedoraHelpers()
 published_branches = mac.release_tracker()
+guide_list = mac.published_publican_guides()
 filtered_branches = ChangeFilter(
         branch_fn = published_branches
         )
@@ -149,6 +150,7 @@ for guide in guide_list:
     all_publican_builders.append(guide_publisher)
     published_branches = mac.get_remote_branches(guide)
     anon_url, ssh_url = mac.guide_git_url(guide)
+    publican_factory[guide_publisher]=BuildFactory(_publican_publisher_factory_step_generator(guide))
     c['change_source'].append(GitPoller(
         anon_url, 
         workdir=guide, 
@@ -156,7 +158,6 @@ for guide in guide_list:
         pollinterval=random.randint(300,600)
         ))
 
-   publican_factory[guide_publisher]=BuildFactory(_publican_publisher_factory_step_generator(guide))
     c['builders'].append(
         BuilderConfig(
             name=guide_publisher,
