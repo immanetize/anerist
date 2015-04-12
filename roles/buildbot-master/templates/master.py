@@ -24,8 +24,6 @@ from anerist.helpers import FedoraHelpers
 jeff = PublicanHelpers()
 mac = FedoraHelpers()
 published_branches = mac.release_tracker()
-published_branches.append('master')
-guide_list = mac.published_publican_guides()
 filtered_branches = ChangeFilter(
         branch_fn = published_branches
         )
@@ -35,16 +33,6 @@ translated_langs = jeff.valid_langs()
 
 from buildbot.changes.gitpoller import GitPoller
 import random
-
-c['change_source'] = []
-for guide in guide_list:
-    anon_url, ssh_url = mac.guide_git_url(guide)
-    c['change_source'].append(GitPoller(
-        anon_url, 
-        workdir=guide, 
-        branches=published_branches,
-        pollinterval=random.randint(300,600)
-        ))
 
 ####### BUILDERS
 
@@ -153,12 +141,22 @@ c['schedulers'] = []
 #                            builderNames=["PublicanAllFormats"]))
 
 
+c['change_source'] = []
 c['builders'] = []
 publican_factory = {}
 for guide in guide_list:
     guide_publisher = "%s-publisher" % guide
     all_publican_builders.append(guide_publisher)
-    publican_factory[guide_publisher]=BuildFactory(_publican_publisher_factory_step_generator(guide))
+    published_branches = mac.get_remote_branches(guide)
+    anon_url, ssh_url = mac.guide_git_url(guide)
+    c['change_source'].append(GitPoller(
+        anon_url, 
+        workdir=guide, 
+        branches=published_branches,
+        pollinterval=random.randint(300,600)
+        ))
+
+   publican_factory[guide_publisher]=BuildFactory(_publican_publisher_factory_step_generator(guide))
     c['builders'].append(
         BuilderConfig(
             name=guide_publisher,
@@ -197,16 +195,16 @@ for guide in guide_list:
                 )
         
         
-for lang in translated_langs:
-    for branch in published_branches:
-        c['schedulers'].append(Nightly(
-            name = "%s %s Translation Validator" % (branch, lang),
-            branch = branch,
-            builderNames = all_translation_builders[lang],
-            hour = random.randint(2, 5),
-            minute = random.randint(0,59)
-            )
-        )
+#for lang in translated_langs:
+#    for branch in published_branches:
+#        c['schedulers'].append(Nightly(
+#            name = "%s %s Translation Validator" % (branch, lang),
+#            branch = branch,
+#            builderNames = all_translation_builders[lang],
+#            hour = random.randint(2, 5),
+#            minute = random.randint(0,59)
+#            )
+#        )
 
 
 
