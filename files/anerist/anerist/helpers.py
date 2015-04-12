@@ -88,7 +88,11 @@ class FedoraHelpers():
             if int(release['version']) == max(eol_releases):
                 published_releases.append(release['branchname'])
         return published_releases
-
+    def published_publican_guides(self):
+        all_guides = set(self.all_publican_guides())
+        old_guides = set(self.deprecated_publican_guides())
+        published_guides = list(all_guides.difference(old_guides))
+        return published_guides
     def all_publican_guides(self):
         guide_list = [
                 "user-guide",

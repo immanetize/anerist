@@ -20,12 +20,7 @@ mac = FedoraHelpers()
 
 published_branches = mac.release_tracker()
 
-language_list = jeff.valid_langs()
-
-all_publican_guides = mac.all_publican_guides()
-deprecated_publican_guides = mac.deprecated_publican_guides()
-
-guide_list = list(set(all_publican_guides).difference(set(deprecated_publican_guides)))
+guide_list = mac.published_publican_guides()
 
 def _guide_git_url(guide):
     anon_url = "https://git.fedorahosted.org/git/docs/%s.git" % guide
