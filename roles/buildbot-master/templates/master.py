@@ -177,23 +177,23 @@ for guide in guide_list:
         builderNames=[guide_publisher],
         treeStableTimer=None,
         ))
-    for lang in translated_langs:
-        lang_tester = "%s_%s_translator" % (guide, lang)
-        all_translation_builders.setdefault(lang, []).append(lang_tester)
-        publican_factory[lang_tester] = BuildFactory(
-                _publican_publisher_factory_step_generator(
-                    guide, 
-                    langs=[lang], 
-                    formats=["html-single"]
-                    )
-                )
-        c['builders'].append(
-                BuilderConfig(
-                    name = lang_tester,
-                    slavenames=lan_buildslaves,
-                    factory=publican_factory[lang_tester]
-                    )
-                )
+#    for lang in translated_langs:
+#        lang_tester = "%s_%s_translator" % (guide, lang)
+#        all_translation_builders.setdefault(lang, []).append(lang_tester)
+#        publican_factory[lang_tester] = BuildFactory(
+#                _publican_publisher_factory_step_generator(
+#                    guide, 
+#                    langs=[lang], 
+#                    formats=["html-single"]
+#                    )
+#                )
+#        c['builders'].append(
+#                BuilderConfig(
+#                    name = lang_tester,
+#                    slavenames=lan_buildslaves,
+#                    factory=publican_factory[lang_tester]
+#                    )
+#                )
         
         
 #for lang in translated_langs:

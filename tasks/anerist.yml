@@ -5,6 +5,7 @@
     - PyYAML
     - python-setuptools
     - packagedb-cli
+    - GitPython
 - name: copy anerist files
   copy: src=../files/anerist dest=/root/
   notify:
