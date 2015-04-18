@@ -1,0 +1,25 @@
+From 369d0e10463082dc3fde86c5cedde6dc66a6eb6d Mon Sep 17 00:00:00 2001
+From: Pete Travis <immanetize@fedoraproject.org>
+Date: Mon, 13 Apr 2015 00:02:41 -0600
+Subject: [PATCH] set a generous start timeout delay
+
+---
+ master/buildbot/scripts/logwatcher.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/master/buildbot/scripts/logwatcher.py b/master/buildbot/scripts/logwatcher.py
+index c11ac42..573b308 100644
+--- a/master/buildbot/scripts/logwatcher.py
++++ b/master/buildbot/scripts/logwatcher.py
+@@ -48,7 +48,7 @@ class TailProcess(protocol.ProcessProtocol):
+ 
+ class LogWatcher(LineOnlyReceiver):
+     POLL_INTERVAL = 0.1
+-    TIMEOUT_DELAY = 10.0
++    TIMEOUT_DELAY = 300.0
+     delimiter = os.linesep
+ 
+     def __init__(self, logfile):
+-- 
+2.3.5
+
