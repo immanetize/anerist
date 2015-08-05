@@ -6,7 +6,6 @@ from buildbot.schedulers.basic import AnyBranchScheduler
 from buildbot.schedulers.forcesched import ForceScheduler
 from buildbot.changes.filter import ChangeFilter
 from buildbot.scheduler import Nightly
-
 c = BuildmasterConfig = {}
 
 ####### BUILDSLAVES
@@ -20,10 +19,12 @@ c['protocols'] = {'pb': {'port': 9989}}
 
 from anerist.helpers import PublicanHelpers
 from anerist.helpers import FedoraHelpers
+from anerist.helpers import ReleaseHelpers
 
 jeff = PublicanHelpers()
 mac = FedoraHelpers()
-published_branches = mac.release_tracker()
+releases = ReleaseHelpers()
+published_branches = releases.FedoraReleases()
 guide_list = mac.published_publican_guides()
 filtered_branches = ChangeFilter(
         branch_fn = published_branches

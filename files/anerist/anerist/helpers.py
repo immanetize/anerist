@@ -149,21 +149,6 @@ class FedoraHelpers():
         if reponame.endswith('.git'):
             reponame = reponame[:-len('.git')]
         return reponame
-    
-    def release_tracker(self):
-        release_checker = PkgDB()
-        published_releases = []
-        a = release_checker.get_collections('f*', clt_status=["Active", "EOL", "Under Development"])
-        eol_releases = []
-        for release in a['collections']:
-            if release['status'] == "Active" or release["status"] == "Under Development":
-                published_releases.append(release['branchname'])
-            elif release['status'] == "EOL":
-                eol_releases.append(int(release['version']))
-        for release in a['collections']:
-            if int(release['version']) == max(eol_releases):
-                published_releases.append(release['branchname'])
-        return published_releases
     def published_publican_guides(self):
         all_guides = set(self.all_publican_guides())
         old_guides = set(self.deprecated_publican_guides())
@@ -258,3 +243,20 @@ class FedoraHelpers():
             "selinux-user-guide"
             ]
         return guide_list
+
+class ReleaseHelpers():
+    def FedoraReleases(self):
+        release_checker = PkgDB()
+        published_releases = []
+        a = release_checker.get_collections('f*', clt_status=["Active", "EOL", "Under Development"])
+        eol_releases = []
+        for release in a['collections']:
+            if release['status'] == "Active" or release["status"] == "Under Development":
+                published_releases.append(release['branchname'])
+            elif release['status'] == "EOL":
+                eol_releases.append(int(release['version']))
+        for release in a['collections']:
+            if int(release['version']) == max(eol_releases):
+                published_releases.append(release['branchname'])
+        return published_releases
+
