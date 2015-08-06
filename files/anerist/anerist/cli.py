@@ -9,15 +9,11 @@ class Cli(object):
 
     def update_metadata(
             publican_config="publican.cfg", 
-            metadata_file="metadata.yml",
+            metadata_file="metadata.json",
             lang="en-US",
             ):
         title, stub, abstract = extractors._read_publican_config(publican_config, lang)
-        meta = extractors._load_yaml(metadata_file)
-        meta['title'] = title
-        meta['stub'] = stub
-        meta['abstract'] = abstract
-        extractors._write_yaml(meta, metadata)
+        extractors._write_json(meta, metadata_file)
     
     def parse_args(self):
         parser = argparse.ArgumentParser(
