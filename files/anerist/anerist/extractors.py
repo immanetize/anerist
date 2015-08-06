@@ -125,15 +125,22 @@ class meta_handler():
             stub = re.sub('&%s;' % item, ent[item], stub)
             abstract = re.sub('&%s;' % item, ent[item], abstract)
         return title, stub, abstract
+    
+    def _get_docbook_metadata(self, info_xml_string):
+        docsoup = BeautifulSoup(info)
+        title = docsoup.title.string
+        stub = docsoup.subtitle.string
+        abstract = docsoup.subtitle.string
+        meta = {
+            "title":    title,
+            "stub":     stub,
+            "abstract": abstract
+            }
+        return meta
 
     def _write_json(self, meta, metadata="metadata.json"):
         f = open(metadata, 'w')
-        attributes = {
-            "title":    meta['title'],
-            "stub":     meta['stub'],
-            "abstract": meta['abstract']
-            }
-        printable_json = json.dumps(attributes, encoding="utf-8", indent=3)
+        printable_json = json.dumps(meta, encoding="utf-8", indent=3)
         f.write(printable_json)
         f.close()
 
