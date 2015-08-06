@@ -57,6 +57,30 @@ class meta_handler():
             return xml_files, entity_files
          #placeholder - maybe later we might only want xml or entities
       
+    def _get_xmldoc_structure(self, xml_files):
+        for name in xml_files:
+            if name.endswith("Info.xml"): #&& if info_file is not set?
+                info_file = name
+        info = open(info_file)
+
+    def _substitute_entities(self, xml_string, entity_file):
+
+        entity_list = []
+        ent = {}
+        entity_list.extend(open(entity_file))
+        for line in entity_list:
+            entlist = line.split()
+            if len(entlist):
+                ent_str = " ".join(entlist[2:])
+                ent[entlist[1]] = ent_str.strip('"')
+        for entity in ent:
+            ent[entity] = re.sub('>$', '', ent[entity])
+        for item in ent:
+            for value in ent:
+                ent[value] = re.sub('&%s;' % item, ent[item], ent[value])
+        for item in ent:
+            interpolated_xml = re.sub('&%s;' % item, ent[item], xml_string)
+        return interpolated_xml
 
     def _read_publican_config(self, configfile='publican.cfg', lang='en-US'):
         pcfg = ConfigParser.SafeConfigParser()
