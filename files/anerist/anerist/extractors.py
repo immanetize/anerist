@@ -44,6 +44,20 @@ class meta_handler():
             )
         return output, pub 
 
+    def _get_xml_filelists(self, path=os.getcwd(), lang="en-US", scope='all'):
+        xml_files = []
+        entity_files = []
+        for root, dirs, files in os.walk(path, lang):
+            for name in files:
+                if name.endswith("xml"):
+                    xml_files.append(os.path.join(root, name)
+                else if name.endswith("ent"):
+                    entity_files.append(os.path.join(root, name)
+        if scope is 'all':
+            return xml_files, entity_files
+         #placeholder - maybe later we might only want xml or entities
+      
+
     def _read_publican_config(self, configfile='publican.cfg', lang='en-US'):
         pcfg = ConfigParser.SafeConfigParser()
         pcfg.readfp(FakeSecHead(open(configfile)))
