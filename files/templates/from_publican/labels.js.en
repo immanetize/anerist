@@ -1,0 +1,46 @@
+var labels = {};
+labels["site"] = {};
+labels["site"]["title"] = "site_host";
+
+labels["Fedora"] = {};
+labels["Fedora"]["label"] = {};
+labels["Fedora"]["label"] = "Fedora";
+labels["Fedora"]["20"] = {};
+labels["Fedora"]["20"]["label"] = "20";
+labels["Fedora"]["20"]["Accessibility_Guide"] = {};
+labels["Fedora"]["20"]["Accessibility_Guide"]["label"] = "Accessibility Guide";
+
+labels["trans_strings"] = {};
+
+labels["trans_strings"]["Versions"] = "Versions";
+labels["trans_strings"]["toc_nav"] = "toc nav";
+labels["trans_strings"]["Untranslated"] = "Untranslated";
+labels["trans_strings"]["Total_Packages"] = "Total Packages";
+labels["trans_strings"]["Document"] = "Document";
+labels["trans_strings"]["index_javascript"] = "This web site requires JavaScript and cookies to be enabled to function correctly.";
+labels["trans_strings"]["collapse_all"] = "collapse all";
+labels["trans_strings"]["SelectYourVersion"] = "Select your version";
+labels["trans_strings"]["Total_Languages"] = "Total Languages";
+labels["trans_strings"]["Document_Language"] = "Document Language";
+labels["trans_strings"]["Document_Home"] = "Document Home";
+labels["trans_strings"]["nojs"] = "<p>The Navigation Menu above requires JavaScript to function.</p><p>Enable JavaScript to allow the Navigation Menu to function.</p><p>Disable CSS to view the Navigation options without JavaScript enabled</p>";
+labels["trans_strings"]["SrcIsNewer"] = "English is newer";
+labels["trans_strings"]["Knowledge"] = "Knowledge";
+labels["trans_strings"]["SelectYourCategory"] = "Scroll to category";
+labels["trans_strings"]["ProductList"] = "Product List";
+labels["trans_strings"]["Welcome"] = "Welcome";
+labels["trans_strings"]["Hide_Menu"] = "Hide Menu";
+labels["trans_strings"]["Formats"] = "Formats";
+labels["trans_strings"]["Packages"] = "Packages";
+labels["trans_strings"]["ProductLinkTitle"] = "Information";
+labels["trans_strings"]["Products"] = "Products";
+labels["trans_strings"]["nocookie"] = "The Navigation Menu below will automatically collapse when pages are loaded. Enable cookies to fix the Navigation Menu functionality.";
+labels["trans_strings"]["Language"] = "Language";
+labels["trans_strings"]["iframe"] = "This is an iframe, to view it upgrade your browser or enable iframe display.";
+labels["trans_strings"]["Code"] = "Code";
+labels["trans_strings"]["Books"] = "Books";
+labels["trans_strings"]["index_toc"] = "Click here to view a static Table of Contents";
+labels["trans_strings"]["Support"] = "Support";
+labels["trans_strings"]["Show_Menu"] = "Show Menu";
+labels["trans_strings"]["Product_Documentation"] = "Product Documentation";
+

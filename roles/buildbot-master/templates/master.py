@@ -150,7 +150,9 @@ for guide in guide_list:
     all_publican_builders.append(guide_publisher)
     published_branches = mac.get_remote_branches(guide)
     anon_url, ssh_url = mac.guide_git_url(guide)
-    publican_factory[guide_publisher]=BuildFactory(_publican_publisher_factory_step_generator(guide))
+    publican_factory[guide_publisher] = BuildFactory(
+            _publican_publisher_factory_step_generator(guide)
+            )
     c['change_source'].append(GitPoller(
         anon_url, 
         workdir=guide, 
