@@ -7,6 +7,8 @@ import ConfigParser
 from bs4 import BeautifulSoup
 import yaml
 import json
+from docutils import core, io
+
 # Thanks Alex Martelli!
 # https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/2819788#2819788
 class FakeSecHead(object):
@@ -22,6 +24,26 @@ class FakeSecHead(object):
         else: 
             return self.fp.readline()
 class meta_handler():
+    def _read_rst_config(self, docfile, source_path=None, destination_path=None):
+        f = open(docfile, 'r')
+        doc_string = unicode(f.read())
+        f.close()
+        overrides = {}
+        overrides['input_encoding'] = 'unicode'
+        output, pub = core.publish_programmatically(
+            source_class=io.StringInput, 
+            source=doc_string,
+            source_path=source_path,
+            destination_class=io.NullOutput, destination=None,
+            destination_path=destination_path,
+            reader=None, reader_name='standalone',
+            parser=None, parser_name='restructuredtext',
+            writer=None, writer_name='null',
+            settings=None, settings_spec=None, settings_overrides=overrides,
+            config_section=None, enable_exit_status=None
+            )
+        return output, pub 
+
     def _read_publican_config(self, configfile='publican.cfg', lang='en-US'):
         pcfg = ConfigParser.SafeConfigParser()
         pcfg.readfp(FakeSecHead(open(configfile)))
@@ -69,9 +91,9 @@ class meta_handler():
     def _write_json(self, meta, metadata="metadata.json"):
         f = open(metadata, 'w')
         attributes = {
-            "title":    meta['title',
-            "stub":     meta['stub',
-            "abstract": meta['abstract'
+            "title":    meta['title'],
+            "stub":     meta['stub'],
+            "abstract": meta['abstract']
             }
         printable_json = json.dumps(attributes, encoding="utf-8", indent=3)
         f.write(printable_json)
