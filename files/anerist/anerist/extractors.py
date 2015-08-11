@@ -23,7 +23,8 @@ class FakeSecHead(object):
                 self.sechead = None
         else: 
             return self.fp.readline()
-class meta_handler():
+class RestructuredTextHandlers():
+    document = None
     def _read_rst_config(self, docfile, source_path=None, destination_path=None):
         f = open(docfile, 'r')
         doc_string = unicode(f.read())
@@ -42,19 +43,28 @@ class meta_handler():
             settings=None, settings_spec=None, settings_overrides=overrides,
             config_section=None, enable_exit_status=None
             )
-        return output, pub 
+        self.document = pub.writer.document
+        return self     
 
+        
+class DocbookHandlers():
+    xml_filelist = None
+    entity_filelist = None
+    entities = None
+    info_file = None
+    meta = None
     def _get_xml_filelists(self, path=os.getcwd(), lang="en-US", scope='all'):
         xml_files = []
         entity_files = []
         for root, dirs, files in os.walk(path, lang):
             for name in files:
                 if name.endswith("xml"):
-                    xml_files.append(os.path.join(root, name)
-                else if name.endswith("ent"):
-                    entity_files.append(os.path.join(root, name)
-        if scope is 'all':
-            return xml_files, entity_files
+                    xml_files.append(os.path.join(root, name)) 
+                elif name.endswith("ent"):
+                   entity_files.append(os.path.join(root, name))
+        self.xml_filelist = xml_files
+        self.entity_filelist = entity_files
+        return self
          #placeholder - maybe later we might only want xml or entities
       
     def _get_xmldoc_structure(self, xml_files):
@@ -131,12 +141,12 @@ class meta_handler():
         title = docsoup.title.string
         stub = docsoup.subtitle.string
         abstract = docsoup.subtitle.string
-        meta = {
+        self.meta = {
             "title":    title,
             "stub":     stub,
             "abstract": abstract
             }
-        return meta
+        return self
 
     def _write_json(self, meta, metadata="metadata.json"):
         f = open(metadata, 'w')
@@ -146,8 +156,8 @@ class meta_handler():
 
     def _load_json(self, metadata="metadata.json"):
         f = open(metadata, 'r')
-        meta = json.loads(f.read())
-        return meta
+        self.meta = json.loads(f.read())
+        return self
 
     def _load_yaml(self, metadata="metadata.yml"):
         y = open(metadata)
