@@ -17,12 +17,10 @@ c['protocols'] = {'pb': {'port': 9989}}
 
 from anerist.helpers import PublicanHelpers
 from anerist.helpers import FedoraHelpers
-from anerist.helpers import ReleaseHelpers
 
 jeff = PublicanHelpers()
 mac = FedoraHelpers()
-releases = ReleaseHelpers()
-published_branches = releases.FedoraReleases()
+published_branches = mac.release_tracker()
 guide_list = mac.published_publican_guides()
 filtered_branches = ChangeFilter(
         branch_fn = published_branches
@@ -39,7 +37,6 @@ import random
 from buildbot.process.factory import BuildFactory
 from buildbot.steps.source.git import Git
 from buildbot.steps.shell import ShellCommand
-from buildbot.process.factory import Publican
 from buildbot.steps.transfer import DirectoryUpload
 from buildbot.process.properties import Interpolate
 from datetime import datetime

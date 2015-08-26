@@ -16,4 +16,4 @@ EXPOSE 8010
 EXPOSE 9989
 
 WORKDIR /srv/buildbot/anerist 
-CMD buildbot start
+CMD buildbot start || tail -f twistd.log

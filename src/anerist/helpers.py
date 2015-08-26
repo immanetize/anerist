@@ -243,9 +243,7 @@ class FedoraHelpers():
             "selinux-user-guide"
             ]
         return guide_list
-
-class ReleaseHelpers():
-    def FedoraReleases(self):
+    def release_tracker(self):
         release_checker = PkgDB()
         published_releases = []
         a = release_checker.get_collections('f*', clt_status=["Active", "EOL", "Under Development"])
