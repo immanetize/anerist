@@ -11,9 +11,7 @@ c = BuildmasterConfig = {}
 ####### BUILDSLAVES
 from buildbot.buildslave import BuildSlave
 c['slaves'] = [
-        {% for host in groups['buildbot-slaves'] %}    
-	    BuildSlave("{{ host }}", "{{ ansible_local.buildbot.pass.buildslave_pass }}"),
-        {% endfor %}
+        BuildSlave("localhost", "Lift&Mid6Glee"),
 	]
 c['protocols'] = {'pb': {'port': 9989}}
 
@@ -75,7 +73,7 @@ def _publican_langtest_factory_step_generator(guide, lang, commit=False):
     zanata_pull_command = [
             "/usr/bin/zanata",
             "--username immanetize",
-            "--apikey {{  ansible_local.buildbot.pass.zanata_api_key }}",
+            "--apikey "REDACTED",
             "--transdir ./%s./" % lang,
             "--lang %s" % lang
             ]
@@ -126,9 +124,7 @@ def _publican_langtest_factory_step_generator(guide, lang, commit=False):
 from buildbot.config import BuilderConfig
 
 lan_buildslaves = []
-{% for host in groups['buildbot-slaves'] %}
-lan_buildslaves.append("{{ host }}")
-{% endfor %}
+lan_buildslaves.append("localhost")
 
 all_publican_builders = [] 
 all_translation_builders = {}
