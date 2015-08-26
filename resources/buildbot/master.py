@@ -73,7 +73,7 @@ def _publican_langtest_factory_step_generator(guide, lang, commit=False):
     zanata_pull_command = [
             "/usr/bin/zanata",
             "--username immanetize",
-            "--apikey "REDACTED",
+            "--apikey 'REDACTED'",
             "--transdir ./%s./" % lang,
             "--lang %s" % lang
             ]
