@@ -1,16 +1,16 @@
 FROM fedora:22
 MAINTAINER https://github.com/immanetize/anerist
 
-RUN && dnf update -y --setopt="deltarpm=0" && dnf clean all
+RUN dnf update -y --setopt="deltarpm=0" && dnf clean all
 RUN dnf install -y python-beautifulsoup4 PyYAML python-setuptools packagedb-cli GitPython git buildbot-master  zanata-python-client publican publican-fedora && dnf clean all
 
 RUN mkdir -p /srv/buildbot
 
-COPY ./anerist /srv/anerist
+ADD src /srv/anerist
 RUN cd /srv/anerist && python setup.py develop
 
 RUN buildbot create-master -r /srv/buildbot/anerist
-COPY ./resources/buildbot/master.py /srv/buildbot/anerist/
+ADD ./resources/buildbot/master.py /srv/buildbot/anerist/master.cfg
 
 EXPOSE 8010
 EXPOSE 9989
