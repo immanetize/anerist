@@ -1,8 +1,8 @@
 FROM fedora:22
 MAINTAINER https://github.com/immanetize/anerist
 
-RUN dnf clean all && dnf update -y --setopt="deltarpm=0" 
-RUN dnf install -y python-beautifulsoup4 PyYAML python-setuptools packagedb-cli GitPython git buildbot-master  zanata-python-client publican publican-fedora
+RUN && dnf update -y --setopt="deltarpm=0" && dnf clean all
+RUN dnf install -y python-beautifulsoup4 PyYAML python-setuptools packagedb-cli GitPython git buildbot-master  zanata-python-client publican publican-fedora && dnf clean all
 
 RUN mkdir -p /srv/buildbot
 
