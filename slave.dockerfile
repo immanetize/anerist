@@ -9,7 +9,7 @@ RUN mkdir -p /srv/buildbot
 ADD ./src /srv/anerist
 RUN cd /srv/anerist && python setup.py develop
 
-RUN buildslave create-slave -r /srv/buildbot/anerist-slave localhost:9989 localhost 'Lift&Mid6Glee'
+RUN buildslave create-slave -r /srv/buildbot/anerist-slave anerist-master:9989 anerist-slave 'Lift&Mid6Glee'
 
 WORKDIR /srv/buildbot/anerist-slave 
-CMD buildslave start
+CMD buildslave start && tail -f twistd.log

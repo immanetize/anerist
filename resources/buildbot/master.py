@@ -11,7 +11,7 @@ c = BuildmasterConfig = {}
 ####### BUILDSLAVES
 from buildbot.buildslave import BuildSlave
 c['slaves'] = [
-        BuildSlave("localhost", "Lift&Mid6Glee"),
+        BuildSlave("anerist-slave", "Lift&Mid6Glee"),
 	]
 c['protocols'] = {'pb': {'port': 9989}}
 
@@ -121,7 +121,7 @@ def _publican_langtest_factory_step_generator(guide, lang, commit=False):
 from buildbot.config import BuilderConfig
 
 lan_buildslaves = []
-lan_buildslaves.append("localhost")
+lan_buildslaves.append("anerist-slave")
 
 all_publican_builders = [] 
 all_translation_builders = {}

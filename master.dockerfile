@@ -1,4 +1,4 @@
-FROM fedora:22
+FROM fedora
 MAINTAINER https://github.com/immanetize/anerist
 
 RUN dnf update -y --setopt="deltarpm=0" && dnf clean all
