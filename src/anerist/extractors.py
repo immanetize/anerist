@@ -7,10 +7,22 @@ import ConfigParser
 from bs4 import BeautifulSoup
 import yaml
 import json
-from docutils import core, io
+from docutils import core, io, nodes
+from docutils.parsers import rst
 
 # Thanks Alex Martelli!
 # https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/2819788#2819788
+class slug(rst.Directive):
+    required_arguments = 1
+    optional_arguments = 0
+    final_argument_whitespace = True
+
+    def run(self):
+        self.state_machine.document['slug'] = self.arguments[0]
+        return []
+
+rst.directives.register_directive('slug', slug)
+
 class FakeSecHead(object):
     def __init__(self, fp):
         self.fp = fp
@@ -25,6 +37,8 @@ class FakeSecHead(object):
             return self.fp.readline()
 class RestructuredTextHandlers():
     document = None
+    parser = rst.Parser(rfc2822=True)
+        
     def _read_rst_config(self, docfile, source_path=None, destination_path=None):
         f = open(docfile, 'r')
         doc_string = unicode(f.read())
@@ -38,13 +52,16 @@ class RestructuredTextHandlers():
             destination_class=io.NullOutput, destination=None,
             destination_path=destination_path,
             reader=None, reader_name='standalone',
-            parser=None, parser_name='restructuredtext',
+            parser=self.parser, parser_name='restructuredtext', #parser=None, parser_name='restructuredtext',
             writer=None, writer_name='null',
             settings=None, settings_spec=None, settings_overrides=overrides,
             config_section=None, enable_exit_status=None
             )
         self.document = pub.writer.document
         return self     
+    def _parse_metadata(self):
+        d = self.document
+        title = d.get('title')
 
         
 class DocbookHandlers():
