@@ -10,29 +10,7 @@ import json
 from docutils import core, io, nodes
 from docutils.parsers import rst
 from docutils.nodes import Special, Invisible, FixedTextElement
-
-#class slug(rst.Directive):
-#    required_arguments = 1
-#    optional_arguments = 0
-#    final_argument_whitespace = True
-#
-#    def run(self):
-#        self.state_machine.document['slug'] = self.arguments[0]
-#        return []
-
-class slug(Special, Invisible, FixedTextElement):
-    pass
-
-class Slug(rst.Directive):
-    required_arguments = 1
-    optional_argumetns = 0
-    has_conent = True
-    def run(self):
-        thenode = slug(text=self.arguments[0])
-        return [thenode]
-
-rst.directives.register_directive('slug', Slug)
-
+from anerist.rst import custom_directives
 
 # Thanks Alex Martelli!
 # https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/2819788#2819788
