@@ -27,18 +27,9 @@ class FakeSecHead(object):
         else: 
             return self.fp.readline()
 class rest():
-    document = None
     parser = rst.Parser(rfc2822=True)
-    slug = None
-    title = None
-    abstract = None
-    tags = None
-    taxonomy = None
 
-    def _read_rst_config(self, docfile, source_path=None, destination_path=None):
-        f = open(docfile, 'r')
-        doc_string = unicode(f.read())
-        f.close()
+    def _read_rst_config(self, contents, source_path=None, destination_path=None):
         overrides = {}
         overrides['input_encoding'] = 'unicode'
         output, pub = core.publish_programmatically(
@@ -53,12 +44,11 @@ class rest():
             settings=None, settings_spec=None, settings_overrides=overrides,
             config_section=None, enable_exit_status=None
             )
-        self.document = pub.writer.document
-        return self     
-    def _parse_metadata(self):
-        doc = self.document
-        title = doc.get('title')
-        for element in doc:
+        document = pub.writer.document
+        return document     
+    def _parse_metadata(self, document):
+        title = document.get('title')
+        for element in document:
             if element.tagname is 'slug':
                 slug = element.astext()
                 # we don't have anything to reder this, so get it out!
@@ -69,13 +59,31 @@ class rest():
                 tags = element.astext().split(',')
             elif element.tagname is 'tzxonomy':
                 taxonomy = element.astext()    
-        self.document = doc
-        self.title = title
-        self.slug = slug
-        self.abstract = abstract
-        self.tags = tags
-        self.taxonomy = taxonomy
-        return self
+        return title, slug, abstract, tags, taxonomy
+    def _read_file(self, inputfile)
+        output = {}
+        f = open(inputfile, 'r')
+        contents = f.read()
+        f.close()
+        document = self._read_rst_config(contents)
+        output['title'], output['slug'], output['abstract'], output['tags'], output['taxonomy'] = self._parse_metadata(document)
+        output['source_type'] = "rst"
+        return output
+    def read_broker(self, inputfiles='all'):
+        metadata = []
+        if inputfiles is 'all':
+            inputfiles = []
+            for root, dirs, files in os.walk(os.getcwd())
+                for name in files:
+                    if name.endswith("rst"):
+                        inputfiles.append(os.path.join(root, name)
+
+        for inputfile in inputfiles:
+            metadatum = _read_file(inputfile)
+            metadata.append(metadatum)
+        return metadata
+
+        
 
         
 class DocbookHandlers():
