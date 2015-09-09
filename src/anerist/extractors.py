@@ -30,6 +30,11 @@ class rest():
     document = None
     parser = rst.Parser(rfc2822=True)
     slug = None
+    title = None
+    abstract = None
+    tags = None
+    taxonomy = None
+
     def _read_rst_config(self, docfile, source_path=None, destination_path=None):
         f = open(docfile, 'r')
         doc_string = unicode(f.read())
@@ -52,14 +57,24 @@ class rest():
         return self     
     def _parse_metadata(self):
         doc = self.document
-        title = d.get('title')
+        title = doc.get('title')
         for element in doc:
             if element.tagname is 'slug':
                 slug = element.astext()
                 # we don't have anything to reder this, so get it out!
                 doc.pop(doc.index(element))
+            elif element.tagname is 'abstract':
+                abstract = element.astext()
+            elif element.tagname is 'tags':
+                tags = element.astext().split(',')
+            elif element.tagname is 'tzxonomy':
+                taxonomy = element.astext()    
         self.document = doc
+        self.title = title
         self.slug = slug
+        self.abstract = abstract
+        self.tags = tags
+        self.taxonomy = taxonomy
         return self
 
         
