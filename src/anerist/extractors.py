@@ -9,20 +9,33 @@ import yaml
 import json
 from docutils import core, io, nodes
 from docutils.parsers import rst
+from docutils.nodes import Special, Invisible, FixedTextElement
+
+#class slug(rst.Directive):
+#    required_arguments = 1
+#    optional_arguments = 0
+#    final_argument_whitespace = True
+#
+#    def run(self):
+#        self.state_machine.document['slug'] = self.arguments[0]
+#        return []
+
+class slug(Special, Invisible, FixedTextElement):
+    pass
+
+class Slug(rst.Directive):
+    required_arguments = 1
+    optional_argumetns = 0
+    has_conent = True
+    def run(self):
+        thenode = slug(text=self.arguments[0])
+        return [thenode]
+
+rst.directives.register_directive('slug', Slug)
+
 
 # Thanks Alex Martelli!
 # https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/2819788#2819788
-class slug(rst.Directive):
-    required_arguments = 1
-    optional_arguments = 0
-    final_argument_whitespace = True
-
-    def run(self):
-        self.state_machine.document['slug'] = self.arguments[0]
-        return []
-
-rst.directives.register_directive('slug', slug)
-
 class FakeSecHead(object):
     def __init__(self, fp):
         self.fp = fp
@@ -38,7 +51,7 @@ class FakeSecHead(object):
 class RestructuredTextHandlers():
     document = None
     parser = rst.Parser(rfc2822=True)
-        
+    slug = None
     def _read_rst_config(self, docfile, source_path=None, destination_path=None):
         f = open(docfile, 'r')
         doc_string = unicode(f.read())
@@ -60,8 +73,16 @@ class RestructuredTextHandlers():
         self.document = pub.writer.document
         return self     
     def _parse_metadata(self):
-        d = self.document
+        doc = self.document
         title = d.get('title')
+        for element in doc:
+            if element.tagname is 'slug':
+                slug = element.astext()
+                # we don't have anything to reder this, so get it out!
+                doc.pop(doc.index(element))
+        self.document = doc
+        self.slug = slug
+        return self
 
         
 class DocbookHandlers():
