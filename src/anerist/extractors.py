@@ -26,7 +26,7 @@ class FakeSecHead(object):
                 self.sechead = None
         else: 
             return self.fp.readline()
-class RestructuredTextHandlers():
+class rest():
     document = None
     parser = rst.Parser(rfc2822=True)
     slug = None
