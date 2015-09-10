@@ -50,7 +50,8 @@ The extractor retrieves metadata from documents in the working directory, conver
     "slug":   "machine_readable_title_representation",
     "date":   "2015-07-2015",
     "taxonomy": "Category/Subcategory/Section",
-    "tags": ["topic", "attribute", "keyword"]
+    "tags": ["topic", "attribute", "keyword"],
+    "source_type": "rst"
   }
 
 Values should prefer command line arguments over derived values when given.
