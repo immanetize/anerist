@@ -69,16 +69,16 @@ class rest():
         output['title'], output['slug'], output['abstract'], output['tags'], output['taxonomy'] = self._parse_metadata(document)
         output['source_type'] = "rst"
         return output
-    def read_broker(self, inputfiles='all'):
+    def read_broker(self, target, lang):
         metadata = []
-        if inputfiles is 'all':
-            inputfiles = []
-            for root, dirs, files in os.walk(os.getcwd()):
+        if os.path.isdir(target):
+            file_list = []
+            for root, dirs, files in os.walk(target):
                 for name in files:
                     if name.endswith("rst"):
                         inputfiles.append(os.path.join(root, name))
 
-        for inputfile in inputfiles:
+        for inputfile in file_list:
             metadatum = _read_file(inputfile)
             metadata.append(metadatum)
         return metadata
@@ -86,12 +86,12 @@ class rest():
         
 
         
-class DocbookHandlers():
+class docbook():
     # TODO: Move path default up the logic
-    def _get_xml_filelists(self, path=os.getcwd(), lang="en-US", scope='all'):
+    def _get_xml_filelists(self, target, lang, scope='all'):
         xml_files = []
         entity_files = []
-        for root, dirs, files in os.walk(path, lang):
+        for root, dirs, files in os.walk(target, lang):
             for name in files:
                 if name.endswith("xml"):
                     xml_files.append(os.path.join(root, name)) 
@@ -143,16 +143,16 @@ class DocbookHandlers():
         metadata.append(output)
         return metadata
 
-    def read_broker(self, lang):
-        entity_filelist, xml_filelist = self._get_xml_filelists(lang)
+    def read_broker(self, target, lang):
+        entity_filelist, xml_filelist = self._get_xml_filelists(target, lang)
         info = self._get_xmldoc_info(xml_filelist)
         interpolated_xml = self._substitute_entities(info)
         meta = _get_docbook_metadata(interpolated_xml)
         return meta
 
 class file_handlers():
-    def write_json(self, meta, metadata="metadata.json"):
-        f = open(metadata, 'w')
+    def write_json(self, meta, output="metadata.json"):
+        f = open(output, 'w')
         printable_json = json.dumps(meta, encoding="utf-8", indent=3)
         f.write(printable_json)
         f.close()
