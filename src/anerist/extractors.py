@@ -87,10 +87,6 @@ class rest():
 
         
 class DocbookHandlers():
-    xml_filelist = None
-    entities = None
-    info_file = None
-    meta = None
     # TODO: Move path default up the logic
     def _get_xml_filelists(self, path=os.getcwd(), lang="en-US", scope='all'):
         xml_files = []
@@ -105,10 +101,16 @@ class DocbookHandlers():
          #placeholder - maybe later we might only want xml or entities
       
     def _get_xmldoc_info(self, xml_files):
+        pub_types = "Book", "Article"
         for name in xml_files:
-            if name.endswith("Info.xml"): #&& if info_file is not set?
+            if name.endswith("Info.xml") and name.endswith(pub_types): #&& if info_file is not set?
                 info_file = name
-        xml_string = open(info_file)
+        xml = open(info_file)
+        xml_string = xml.read()
+        xml.close()
+        return xml_string
+        
+
 
     def _substitute_entities(self, xml_string, entity_filelist):
 
