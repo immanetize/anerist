@@ -60,7 +60,7 @@ class rest():
             elif element.tagname is 'tzxonomy':
                 taxonomy = element.astext()    
         return title, slug, abstract, tags, taxonomy
-    def _read_file(self, inputfile)
+    def _read_file(self, inputfile):
         output = {}
         f = open(inputfile, 'r')
         contents = f.read()
@@ -73,10 +73,10 @@ class rest():
         metadata = []
         if inputfiles is 'all':
             inputfiles = []
-            for root, dirs, files in os.walk(os.getcwd())
+            for root, dirs, files in os.walk(os.getcwd()):
                 for name in files:
                     if name.endswith("rst"):
-                        inputfiles.append(os.path.join(root, name)
+                        inputfiles.append(os.path.join(root, name))
 
         for inputfile in inputfiles:
             metadatum = _read_file(inputfile)
@@ -88,10 +88,10 @@ class rest():
         
 class DocbookHandlers():
     xml_filelist = None
-    entity_filelist = None
     entities = None
     info_file = None
     meta = None
+    # TODO: Move path default up the logic
     def _get_xml_filelists(self, path=os.getcwd(), lang="en-US", scope='all'):
         xml_files = []
         entity_files = []
@@ -101,22 +101,21 @@ class DocbookHandlers():
                     xml_files.append(os.path.join(root, name)) 
                 elif name.endswith("ent"):
                    entity_files.append(os.path.join(root, name))
-        self.xml_filelist = xml_files
-        self.entity_filelist = entity_files
-        return self
+        return entity_filelist, xml_filelist
          #placeholder - maybe later we might only want xml or entities
       
-    def _get_xmldoc_structure(self, xml_files):
+    def _get_xmldoc_info(self, xml_files):
         for name in xml_files:
             if name.endswith("Info.xml"): #&& if info_file is not set?
                 info_file = name
-        info = open(info_file)
+        xml_string = open(info_file)
 
-    def _substitute_entities(self, xml_string, entity_file):
+    def _substitute_entities(self, xml_string, entity_filelist):
 
         entity_list = []
         ent = {}
-        entity_list.extend(open(entity_file))
+        for entity_file in entity_filelist:
+            entity_list.extend(open(entity_file))
         for line in entity_list:
             entlist = line.split()
             if len(entlist):
@@ -131,80 +130,43 @@ class DocbookHandlers():
             interpolated_xml = re.sub('&%s;' % item, ent[item], xml_string)
         return interpolated_xml
 
-    def _read_publican_config(self, configfile='publican.cfg', lang='en-US'):
-        pcfg = ConfigParser.SafeConfigParser()
-        pcfg.readfp(FakeSecHead(open(configfile)))
-        book_type = pcfg.get('pants', 'type')
-        document_root = os.path.dirname(configfile)
-        info_file = "%s/%s/%s_Info.xml" % (
-                document_root,
-                lang, 
-                book_type
-                )
-        entity_file = "%s/%s/%s.ent" % (
-                os.path.dirname(configfile),
-                lang, 
-                book_type
-                )
-
-        info = open(info_file)
+    def _get_docbook_metadata(self, interpolated_xml_string):
         docsoup = BeautifulSoup(info)
-        title = docsoup.title.string
-        stub = docsoup.subtitle.string
-        abstract = docsoup.abstract.para.string
-        for root, dirs, files in os.walk("%s/%s" % (document_root, lang)):
-            for name in files:
-                if name.endswith('ent'):
-                    entity_file = os.path.join(root, name)
-        entity_list = []
-        ent = {}
-        entity_list.extend(open(entity_file))
-        for line in entity_list:
-            entlist = line.split()
-            if len(entlist):
-                ent_str = " ".join(entlist[2:])
-                ent[entlist[1]] = ent_str.strip('"')
-        for entity in ent:
-            ent[entity] = re.sub('>$', '', ent[entity])
-        for item in ent:
-            for value in ent:
-                ent[value] = re.sub('&%s;' % item, ent[item], ent[value])
-        for item in ent:
-            title = re.sub('&%s;' % item, ent[item], title)
-            stub = re.sub('&%s;' % item, ent[item], stub)
-            abstract = re.sub('&%s;' % item, ent[item], abstract)
-        return title, stub, abstract
-    
-    def _get_docbook_metadata(self, info_xml_string):
-        docsoup = BeautifulSoup(info)
-        title = docsoup.title.string
-        stub = docsoup.subtitle.string
-        abstract = docsoup.subtitle.string
-        self.meta = {
-            "title":    title,
-            "stub":     stub,
-            "abstract": abstract
-            }
-        return self
+        metaidata = []
+        output = {}
+        output['title'] = docsoup.title.string
+        output['stub'] = docsoup.subtitle.string
+        output['abstract'] = docsoup.subtitle.string
+        output['source_type'] = 'docbook'
+        metadata.append(output)
+        return metadata
 
-    def _write_json(self, meta, metadata="metadata.json"):
+    def read_broker(self, lang):
+        entity_filelist, xml_filelist = self._get_xml_filelists(lang)
+        info = self._get_xmldoc_info(xml_filelist)
+        interpolated_xml = self._substitute_entities(info)
+        meta = _get_docbook_metadata(interpolated_xml)
+        return meta
+
+class file_handlers():
+    def write_json(self, meta, metadata="metadata.json"):
         f = open(metadata, 'w')
         printable_json = json.dumps(meta, encoding="utf-8", indent=3)
         f.write(printable_json)
         f.close()
 
-    def _load_json(self, metadata="metadata.json"):
+    def load_json(self, metadata="metadata.json"):
         f = open(metadata, 'r')
-        self.meta = json.loads(f.read())
-        return self
+        meta = json.loads(f.read())
+        return meta
 
-    def _load_yaml(self, metadata="metadata.yml"):
+    def load_yaml(self, metadata="metadata.yml"):
         y = open(metadata)
         meta = yaml.load(y)
         y.close()
         return meta
 
-    def _write_yaml(self, meta, metadata="metadata.yml"):
+    def write_yaml(self, meta, metadata="metadata.yml"):
         y = open('metadata.yml', 'w')
         yaml.dump(meta, y, default_flow_style=False)
         y.close()
