@@ -57,21 +57,28 @@ class rest():
                 abstract = element.astext()
             elif element.tagname is 'tags':
                 tags = element.astext().split(',')
-            elif element.tagname is 'tzxonomy':
+            elif element.tagname is 'taxonomy':
                 taxonomy = element.astext()
-            if not 'slug' in locals():
-                slug = title.replace(' ', '-').lower()
-            if not 'abstract' in locals():
-                abstract = ""
-            if not 'tags' in locals():
-                tags = []
-            if not 'taxonomy' in locals():
-                taxonomy = "uncategorized"
+            elif element.tagname is 'title':
+                explicit_title = element.astext()
+                print(explicit_title)
+        if not 'abstract' in locals():
+            abstract = ""
+        if not 'tags' in locals():
+            tags = []
+        if not 'taxonomy' in locals():
+            taxonomy = "uncategorized"
+        if 'explicit_title' in locals():
+            title = explicit_title            
+        if not 'slug' in locals():
+            slug = title.replace(' ', '-').lower()
+               
         return title, slug, abstract, tags, taxonomy
     def _read_file(self, inputfile):
         output = {}
         f = open(inputfile, 'r')
-        contents = unicode(f.read())
+        print("reading " + os.path.basename(inputfile))
+        contents = unicode(f.read(), errors='replace')
         f.close()
         document = self._read_rst_config(contents)
         output['title'], output['slug'], output['abstract'], output['tags'], output['taxonomy'] = self._parse_metadata(document)
@@ -82,11 +89,10 @@ class rest():
         file_list = []
         for item in target:
             if os.path.isdir(item):
-                file_list = []
-                for root, dirs, files in os.walk(target):
+                for root, dirs, files in os.walk(item):
                     for name in files:
                         if name.endswith("rst"):
-                            inputfiles.append(os.path.join(root, name))
+                            file_list.append(os.path.join(root, name))
             elif os.path.isfile(item) or os.path.islink(item):
                 file_list.append(item)
             else:
@@ -106,7 +112,7 @@ class docbook():
         xml_files = []
         entity_files = []
         for item in target:
-            item = unicode(item)
+            item = unicode(item, errors='replace')
             for root, dirs, files in os.walk(item, lang):
                 for name in files:
                     if name.endswith("xml"):
