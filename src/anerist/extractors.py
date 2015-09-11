@@ -85,7 +85,7 @@ class rest():
             slug = slugify(title)
                
         return title, slug, abstract, tags, taxonomy
-    def _read_file(self, inputfile):
+    def _read_file(self, inputfile, lang):
         output = {}
         f = open(inputfile, 'r')
         print("reading " + os.path.basename(inputfile))
@@ -93,7 +93,8 @@ class rest():
         f.close()
         document = self._read_rst_config(contents)
         output['title'], output['slug'], output['abstract'], output['tags'], output['taxonomy'] = self._parse_metadata(document)
-        output['source_type'] = "rst"
+        output['source_type'] = "rest"
+        output['lang'] = lang
         return output
     def read_broker(self, target, lang):
         metadata = []
@@ -110,7 +111,7 @@ class rest():
                 print("Invalid target type specified")
                 sys.exit()
         for inputfile in file_list:
-            metadatum = self._read_file(inputfile)
+            metadatum = self._read_file(inputfile, lang)
             metadata.append(metadatum)
         return metadata
 
@@ -173,6 +174,7 @@ class docbook():
         output['slug'] = slugify(docsoup.title.string)
         output['abstract'] = docsoup.subtitle.string
         output['source_type'] = 'docbook'
+        output['lang'] = lang
         output['tags'] = []
         metadata.append(output)
         return metadata
@@ -181,7 +183,7 @@ class docbook():
         entity_filelist, xml_filelist = self._get_xml_filelists(target, lang)
         info = self._get_xmldoc_info(xml_filelist)
         interpolated_xml = self._substitute_entities(info, entity_filelist)
-        meta = self._get_docbook_metadata(interpolated_xml)
+        meta = self._get_docbook_metadata(interpolated_xml, lang)
         return meta
 
 class file_handlers():
