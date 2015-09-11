@@ -18,9 +18,7 @@ class Cli(object):
         output = self.args.output
         target = self.args.target
         lang = self.args.lang
-        print(markup)
         if markup == 'rest':
-            print(markup)
             metadata = rest_machine.read_broker(target, lang)
         elif markup == 'docbook':
             metadata = docbook_machine.read_broker(target, lang)

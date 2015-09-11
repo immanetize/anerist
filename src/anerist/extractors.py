@@ -34,7 +34,7 @@ class rest():
         overrides['input_encoding'] = 'unicode'
         output, pub = core.publish_programmatically(
             source_class=io.StringInput, 
-            source=doc_string,
+            source=contents,
             source_path=source_path,
             destination_class=io.NullOutput, destination=None,
             destination_path=destination_path,
@@ -49,7 +49,7 @@ class rest():
     def _parse_metadata(self, document):
         title = document.get('title')
         for element in document:
-            if element.tagname is 'slug':
+            if element.tagname == 'slug':
                 slug = element.astext()
                 # we don't have anything to reder this, so get it out!
                 doc.pop(doc.index(element))
@@ -58,12 +58,20 @@ class rest():
             elif element.tagname is 'tags':
                 tags = element.astext().split(',')
             elif element.tagname is 'tzxonomy':
-                taxonomy = element.astext()    
+                taxonomy = element.astext()
+            if not 'slug' in locals():
+                slug = title.replace(' ', '-').lower()
+            if not 'abstract' in locals():
+                abstract = ""
+            if not 'tags' in locals():
+                tags = []
+            if not 'taxonomy' in locals():
+                taxonomy = "uncategorized"
         return title, slug, abstract, tags, taxonomy
     def _read_file(self, inputfile):
         output = {}
         f = open(inputfile, 'r')
-        contents = f.read()
+        contents = unicode(f.read())
         f.close()
         document = self._read_rst_config(contents)
         output['title'], output['slug'], output['abstract'], output['tags'], output['taxonomy'] = self._parse_metadata(document)
@@ -71,15 +79,21 @@ class rest():
         return output
     def read_broker(self, target, lang):
         metadata = []
-        if os.path.isdir(target):
-            file_list = []
-            for root, dirs, files in os.walk(target):
-                for name in files:
-                    if name.endswith("rst"):
-                        inputfiles.append(os.path.join(root, name))
-
+        file_list = []
+        for item in target:
+            if os.path.isdir(item):
+                file_list = []
+                for root, dirs, files in os.walk(target):
+                    for name in files:
+                        if name.endswith("rst"):
+                            inputfiles.append(os.path.join(root, name))
+            elif os.path.isfile(item) or os.path.islink(item):
+                file_list.append(item)
+            else:
+                print("Invalid target type specified")
+                sys.exit()
         for inputfile in file_list:
-            metadatum = _read_file(inputfile)
+            metadatum = self._read_file(inputfile)
             metadata.append(metadatum)
         return metadata
 
@@ -147,7 +161,7 @@ class docbook():
         entity_filelist, xml_filelist = self._get_xml_filelists(target, lang)
         info = self._get_xmldoc_info(xml_filelist)
         interpolated_xml = self._substitute_entities(info)
-        meta = _get_docbook_metadata(interpolated_xml)
+        meta = self._get_docbook_metadata(interpolated_xml)
         return meta
 
 class file_handlers():
