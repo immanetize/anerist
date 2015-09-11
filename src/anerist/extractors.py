@@ -12,6 +12,18 @@ from docutils.parsers import rst
 from docutils.nodes import Special, Invisible, FixedTextElement
 from anerist.rst import custom_directives
 
+def slugify(title):
+    title = title.lower()
+    words = title.split(' ')
+    articles = "a", "an", "the"
+    words_removed = 0
+    for word in words:
+        if word in articles:
+            words.remove(word)
+    title = '-'.join(words)
+    return title
+
+
 # Thanks Alex Martelli!
 # https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/2819788#2819788
 class FakeSecHead(object):
@@ -70,7 +82,7 @@ class rest():
         if 'explicit_title' in locals():
             title = explicit_title            
         if not 'slug' in locals():
-            slug = title.replace(' ', '-').lower()
+            slug = slugify(title)
                
         return title, slug, abstract, tags, taxonomy
     def _read_file(self, inputfile):
@@ -158,7 +170,7 @@ class docbook():
         metadata = []
         output = {}
         output['title'] = docsoup.title.string
-        output['stub'] = docsoup.title.string.replace(" ", "-").lower()
+        output['slug'] = slugify(docsoup.title.string)
         output['abstract'] = docsoup.subtitle.string
         output['source_type'] = 'docbook'
         output['tags'] = []
