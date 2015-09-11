@@ -46,8 +46,8 @@ class Cli(object):
         update_parser.add_argument(
             '-o',
             '--output',
-            help = "metadata file for output.  Defaults to 'metadata.yml'",
-            type = argparse.FileType('w')
+            help = "metadata file for output.  Defaults to 'metadata.json'",
+            default = os.path.join(os.getcwd(), 'metadata.json'),
             )
         update_parser.add_argument(
             '-l',
@@ -59,6 +59,7 @@ class Cli(object):
         update_parser.add_argument(
             'target',
             help = 'files or path to extract',
+            nargs = '*',
             default = '%s' % os.getcwd(),
             )
         return parser.parse_args()
