@@ -12,14 +12,23 @@ class Cli(object):
     def __init__(self):
         self.args = self.parse_args()
 
-    def extract(self, markup, output, target, lang):
-        if markup is 'rest':
+    #def extract(self, markup, output, target, lang):
+    def extract(self):
+        markup = self.args.markup
+        output = self.args.output
+        target = self.args.target
+        lang = self.args.lang
+        print(markup)
+        if markup == 'rest':
+            print(markup)
             metadata = rest_machine.read_broker(target, lang)
-        elif markup is 'docbook':
+        elif markup == 'docbook':
             metadata = docbook_machine.read_broker(target, lang)
-        elif markup is 'detect':
+        elif markup == 'detect':
             print("Markup detection support is not yet available, please specify.")
-
+            sys.exit()
+        else:
+            print("Something went wrong")
         file_machine.write_json(metadata, output)     
     
     def parse_args(self):
@@ -36,6 +45,7 @@ class Cli(object):
             into a YAML metadata descriptor file.
             """,
             )
+        update_parser.set_defaults(func=self.extract)
         update_parser.add_argument(
             '-m', 
             '--markup',
