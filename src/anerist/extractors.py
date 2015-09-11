@@ -61,7 +61,6 @@ class rest():
                 taxonomy = element.astext()
             elif element.tagname is 'title':
                 explicit_title = element.astext()
-                print(explicit_title)
         if not 'abstract' in locals():
             abstract = ""
         if not 'tags' in locals():
