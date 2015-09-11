@@ -105,22 +105,24 @@ class docbook():
     def _get_xml_filelists(self, target, lang, scope='all'):
         xml_files = []
         entity_files = []
-        for root, dirs, files in os.walk(target, lang):
-            for name in files:
-                if name.endswith("xml"):
-                    xml_files.append(os.path.join(root, name)) 
-                elif name.endswith("ent"):
-                   entity_files.append(os.path.join(root, name))
-        return entity_filelist, xml_filelist
+        for item in target:
+            item = unicode(item)
+            for root, dirs, files in os.walk(item, lang):
+                for name in files:
+                    if name.endswith("xml"):
+                        xml_files.append(os.path.join(root, name)) 
+                    elif name.endswith("ent"):
+                       entity_files.append(os.path.join(root, name))
+        return entity_files, xml_files
          #placeholder - maybe later we might only want xml or entities
       
     def _get_xmldoc_info(self, xml_files):
         pub_types = "Book", "Article"
         for name in xml_files:
-            if name.endswith("Info.xml") and name.endswith(pub_types): #&& if info_file is not set?
+            if os.path.basename(name).endswith("Info.xml") and os.path.basename(name).startswith(pub_types): #&& if info_file is not set?
                 info_file = name
         xml = open(info_file)
-        xml_string = xml.read()
+        xml_string = unicode(xml.read())
         xml.close()
         return xml_string
         
@@ -147,20 +149,21 @@ class docbook():
         return interpolated_xml
 
     def _get_docbook_metadata(self, interpolated_xml_string):
-        docsoup = BeautifulSoup(info)
-        metaidata = []
+        docsoup = BeautifulSoup(interpolated_xml_string, "lxml")
+        metadata = []
         output = {}
         output['title'] = docsoup.title.string
-        output['stub'] = docsoup.subtitle.string
+        output['stub'] = docsoup.title.string.replace(" ", "-").lower()
         output['abstract'] = docsoup.subtitle.string
         output['source_type'] = 'docbook'
+        output['tags'] = []
         metadata.append(output)
         return metadata
 
     def read_broker(self, target, lang):
         entity_filelist, xml_filelist = self._get_xml_filelists(target, lang)
         info = self._get_xmldoc_info(xml_filelist)
-        interpolated_xml = self._substitute_entities(info)
+        interpolated_xml = self._substitute_entities(info, entity_filelist)
         meta = self._get_docbook_metadata(interpolated_xml)
         return meta
 
