@@ -1,12 +1,12 @@
 import argparse
 import ConfigParser
-from anerist import extractors
+from anerist import extractors, file_handlers
 import sys
 import os
 
 rest_machine = extractors.rest()
 docbook_machine = extractors.docbook()
-file_machine = extractors.file_handlers()
+file_machine = file_handlers.file_handlers()
 
 class Cli(object):
     def __init__(self):
