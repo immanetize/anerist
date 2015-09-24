@@ -232,6 +232,9 @@ authz_cfg=authz.Authz(
 
 c['www'] = dict(
         port=8010,
+        auth = util.UserPasswordAuth({
+            'hagbard': "celine"
+            }),
         console_view = {},
         plugins = dict(
             waterfall_view = {}
