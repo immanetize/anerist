@@ -8,6 +8,31 @@ rest_machine = extractors.rest()
 docbook_machine = extractors.docbook()
 file_machine = file_handlers.file_handlers()
 
+def extra_args(extras=None, returntype="string"):
+    if not extras:
+        return None
+    d = {}
+    s = ""
+    for pair in extras.split(','):
+        if not '=' in pair or pair.count('=') != 1:
+            raise argparse.ArgumentTypeError(
+                    "Unable to parse extra arguments. \
+                            These should be comma separated key value pairs:\
+                            '--extra-args \"branch=$branch,approver=noone\"'"
+                            )
+        key, value = pair.split('=')
+        value = value.translate(None, '"\'')
+        d[key] = value
+        # we broke this down so maybe more validation could happen
+    if returntype == "string":
+        for key in d.keys():
+            s = s + "%s=%s," % (key, d[key])
+        s = s.strip(',')
+        return s
+    elif returntype == "dict":
+        return d
+
+
 class Cli(object):
     def __init__(self):
         self.args = self.parse_args()
@@ -18,10 +43,14 @@ class Cli(object):
         output = self.args.output
         target = self.args.target
         lang = self.args.lang
+        extra = extra_args(self.args.extra_args, returntype="dict")
+        #extra = {'three': 'tres', 'two': 'dos', 'one': 'uno'}
+        #extra = {"extra": "true"}
+        #extra=None
         if markup == 'rest':
-            metadata = rest_machine.read_broker(target, lang)
+            metadata = rest_machine.read_broker(target, lang, extra)
         elif markup == 'docbook':
-            metadata = docbook_machine.read_broker(target, lang)
+            metadata = docbook_machine.read_broker(target, lang, extra)
         elif markup == 'detect':
             print("Markup detection support is not yet available, please specify.")
             sys.exit()
@@ -50,6 +79,13 @@ class Cli(object):
             help = "Markup format of files being extracted.",
             default = 'detect',
             choices = ['docbook', 'rest', 'detect']
+            )
+        update_parser.add_argument(
+            '-x',
+            '--extra-args',
+            help = "Extra arguments for metadata",
+            default = None,
+            type = extra_args
             )
         update_parser.add_argument(
             '-o',

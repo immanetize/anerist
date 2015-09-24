@@ -83,7 +83,7 @@ class rest():
             slug = slugify(title)
                
         return title, slug, abstract, tags, taxonomy
-    def _read_file(self, inputfile, lang):
+    def _read_file(self, inputfile, lang, extra_args):
         output = {}
         f = open(inputfile, 'r')
         print("reading " + os.path.basename(inputfile))
@@ -93,8 +93,11 @@ class rest():
         output['title'], output['slug'], output['abstract'], output['tags'], output['taxonomy'] = self._parse_metadata(document)
         output['source_type'] = "rest"
         output['lang'] = lang
+        if extra_args:
+            for key in extra_args.keys():
+                output[key] = extra_args[key]
         return output
-    def read_broker(self, target, lang):
+    def read_broker(self, target, lang, extra_args):
         metadata = []
         file_list = []
         for item in target:
@@ -109,8 +112,9 @@ class rest():
                 print("Invalid target type specified")
                 sys.exit()
         for inputfile in file_list:
-            metadatum = self._read_file(inputfile, lang)
+            metadatum = self._read_file(inputfile, lang, extra_args)
             metadata.append(metadatum)
+        
         return metadata
 
         
@@ -164,7 +168,7 @@ class docbook():
             interpolated_xml = re.sub('&%s;' % item, ent[item], xml_string)
         return interpolated_xml
 
-    def _get_docbook_metadata(self, interpolated_xml_string):
+    def _get_docbook_metadata(self, interpolated_xml_string, lang, extra_args):
         docsoup = BeautifulSoup(interpolated_xml_string, "lxml")
         metadata = []
         output = {}
@@ -174,12 +178,15 @@ class docbook():
         output['source_type'] = 'docbook'
         output['lang'] = lang
         output['tags'] = []
+        if extra_args:
+            for key in extra_args.keys():
+                output[key] = extra_args[key]
         metadata.append(output)
         return metadata
 
-    def read_broker(self, target, lang):
+    def read_broker(self, target, lang, extra_args):
         entity_filelist, xml_filelist = self._get_xml_filelists(target, lang)
         info = self._get_xmldoc_info(xml_filelist)
         interpolated_xml = self._substitute_entities(info, entity_filelist)
-        meta = self._get_docbook_metadata(interpolated_xml, lang)
+        meta = self._get_docbook_metadata(interpolated_xml, lang, extra_args)
         return meta
