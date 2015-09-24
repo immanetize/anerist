@@ -2,7 +2,8 @@ FROM fedora:22
 MAINTAINER https://github.com/immanetize/anerist
 
 RUN dnf update -y && dnf clean all
-RUN dnf install -y python-beautifulsoup4 PyYAML python-setuptools packagedb-cli GitPython git buildbot-slave zanata-python-client publican publican-fedora buildbot && dnf clean all
+RUN dnf install -y python-beautifulsoup4 PyYAML python-setuptools packagedb-cli GitPython git zanata-python-client publican publican-fedora dnf-plugins-core && dnf clean all
+RUN dnf copr enable immanetize/buildbot-nine && dnf install -y buildbot buildbot-slave && dnf clean all
 
 RUN mkdir -p /srv/buildbot
 
