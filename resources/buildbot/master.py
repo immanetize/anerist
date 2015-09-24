@@ -215,7 +215,6 @@ c['schedulers'].append(ForceScheduler(
 
 c['status'] = []
 
-from buildbot.status import html
 from buildbot.status.web import authz, auth
 
 authz_cfg=authz.Authz(
@@ -230,7 +229,14 @@ authz_cfg=authz.Authz(
     stopAllBuilds = False,
     cancelPendingBuild = False,
 )
-c['status'].append(html.WebStatus(http_port=8010, authz=authz_cfg))
+
+c['www'] = dict(
+        port=8010,
+        console_view = {},
+        plugins = dict(
+            waterfall_view = {}
+            )
+        )
 
 ####### PROJECT IDENTITY
 
