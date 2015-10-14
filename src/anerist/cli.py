@@ -1,6 +1,8 @@
 import argparse
 import ConfigParser
-from anerist import extractors, file_handlers
+from anerist import extractors
+from anerist import file_handlers
+from anerist import assembler
 import sys
 import os
 
@@ -57,7 +59,15 @@ class Cli(object):
         else:
             print("Something went wrong")
         file_machine.write_json(metadata, output)     
-    
+    def assemble(self):
+        target = self.args.target
+        meta_list = []
+        for root, dirs, files in os.walk(os.getcwd()):
+            for name in files:
+                if name.endswith("json"):
+                    meta_list.append(os.path.join(root, name))
+        toc = assember.do_work(target)
+
     def parse_args(self):
         parser = argparse.ArgumentParser(
             description = "A multipurpose toolkit for processing documentation metadata",
@@ -65,6 +75,19 @@ class Cli(object):
             )
         subparsers = parser.add_subparsers(help='sub-command help', dest='subcommand')
         subparsers.required = True
+        assemble_parser = subparsers.add_parser(
+                'assemble'
+                help = """
+                Assembles json metadata from a given path.
+                """,
+                )
+        assemble_parser.set_defaults(func=self.assemble)
+        assemble_parser.add_argument(
+            'target',
+            help = "path to assemble."
+            nargs = '*',
+            default = os.getcwd(),
+            )
         extract_parser = subparsers.add_parser(
             'extract',
             help = """
