@@ -65,42 +65,42 @@ class Cli(object):
             )
         subparsers = parser.add_subparsers(help='sub-command help', dest='subcommand')
         subparsers.required = True
-        update_parser = subparsers.add_parser(
+        extract_parser = subparsers.add_parser(
             'extract',
             help = """
             Extracts information from the native format and inserts
             into a YAML metadata descriptor file.
             """,
             )
-        update_parser.set_defaults(func=self.extract)
-        update_parser.add_argument(
+        extract_parser.set_defaults(func=self.extract)
+        extract_parser.add_argument(
             '-m', 
             '--markup',
             help = "Markup format of files being extracted.",
             default = 'detect',
             choices = ['docbook', 'rest', 'detect']
             )
-        update_parser.add_argument(
+        extract_parser.add_argument(
             '-x',
             '--extra-args',
             help = "Extra arguments for metadata",
             default = None,
             type = extra_args
             )
-        update_parser.add_argument(
+        extract_parser.add_argument(
             '-o',
             '--output',
             help = "metadata file for output.  Defaults to 'metadata.json'",
             default = os.path.join(os.getcwd(), 'metadata.json'),
             )
-        update_parser.add_argument(
+        extract_parser.add_argument(
             '-l',
             '--lang',
             help = 'language of input target',
             choices = ['en-US'],
             default = 'en-US'
             )
-        update_parser.add_argument(
+        extract_parser.add_argument(
             'target',
             help = 'files or path to extract',
             nargs = '*',
