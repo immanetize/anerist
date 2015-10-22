@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# Extract metadata from a publican book
 import argparse
 import os
 import re
@@ -62,7 +60,7 @@ class rest():
             if element.tagname == 'slug':
                 slug = element.astext()
                 # we don't have anything to reder this, so get it out!
-                doc.pop(doc.index(element))
+                document.pop(document.index(element))
             elif element.tagname is 'abstract':
                 abstract = element.astext()
             elif element.tagname is 'tags':
@@ -117,16 +115,12 @@ class rest():
         
         return metadata
 
-        
-
-        
 class docbook():
-    # TODO: Move path default up the logic
     def _get_xml_filelists(self, target, lang, scope='all'):
         xml_files = []
         entity_files = []
         for item in target:
-            item = unicode(item, errors='replace')
+#            item = unicode(item, errors='replace')
             for root, dirs, files in os.walk(item, lang):
                 for name in files:
                     if name.endswith("xml"):

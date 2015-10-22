@@ -104,7 +104,7 @@ class Cli(object):
             'target',
             help = 'files or path to extract',
             nargs = '*',
-            default = '%s' % os.getcwd(),
+            default = [os.getcwd()],
             )
         return parser.parse_args()
 
