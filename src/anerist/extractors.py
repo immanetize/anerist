@@ -169,9 +169,12 @@ class docbook():
         output['title'] = docsoup.title.string
         output['slug'] = slugify(docsoup.title.string)
         output['abstract'] = docsoup.subtitle.string
+        output['taxonomy'] = docsoup.subjectterm.string
         output['source_type'] = 'docbook'
         output['lang'] = lang
         output['tags'] = []
+        for tag in docsoup.keywordset.findChildren():
+            output['tags'].append(tag.string)
         if extra_args:
             for key in extra_args.keys():
                 output[key] = extra_args[key]
