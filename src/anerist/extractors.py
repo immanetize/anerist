@@ -155,12 +155,12 @@ class docbook():
                 ent[entlist[1]] = ent_str.strip('"')
         for entity in ent:
             ent[entity] = re.sub('>$', '', ent[entity])
-        for item in ent:
-            for value in ent:
+        for item in ent.keys():
+            for value in ent.keys():
                 ent[value] = re.sub('&%s;' % item, ent[item], ent[value])
-        for item in ent:
-            interpolated_xml = re.sub('&%s;' % item, ent[item], xml_string)
-        return interpolated_xml
+        for item in ent.keys():
+            xml_string = re.sub('&%s;' % item, ent[item], xml_string)
+        return xml_string
 
     def _get_docbook_metadata(self, interpolated_xml_string, lang, extra_args):
         docsoup = BeautifulSoup(interpolated_xml_string, "lxml")
