@@ -148,6 +148,7 @@ class docbook():
         return xml_string
         
     def _get_entity_dict(self, entity_filelist):
+        
         def remove_member(l, member):
             if member in l:
                 l.remove(member)
@@ -166,6 +167,9 @@ class docbook():
             for value in entity_dict.keys():
                 entity_dict[item] = re.sub('&%s;' % value, entity_dict[value], entity_dict[item])
 
+        # add some known values
+        entity_dict['nbsp'] = " "
+        entity_dict['amp'] = "&"
         return entity_dict
 
     def _get_docbook_metadata(self, interpolated_xml_string, lang, extra_args):
