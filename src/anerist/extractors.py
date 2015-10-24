@@ -142,30 +142,37 @@ class docbook():
         
 
 
-    def _substitute_entities(self, xml_string, entity_filelist):
-
-        entity_list = []
-        ent = {}
-        for entity_file in entity_filelist:
-            entity_list.extend(open(entity_file))
-        for line in entity_list:
-            entlist = line.split()
-            if len(entlist):
-                ent_str = " ".join(entlist[2:])
-                ent[entlist[1]] = ent_str.strip('"')
-        for entity in ent:
-            ent[entity] = re.sub('>$', '', ent[entity])
-        for item in ent.keys():
-            for value in ent.keys():
-                ent[value] = re.sub('&%s;' % item, ent[item], ent[value])
-        for item in ent.keys():
-            xml_string = re.sub('&%s;' % item, ent[item], xml_string)
+    def _substitute_entities(self, xml_string, entity_dict):
+        for item in entity_dict.keys():
+            xml_string = re.sub('&%s;' % item, entity_dict[item], xml_string)
         return xml_string
+        
+    def _get_entity_dict(self, entity_filelist):
+        def remove_member(l, member):
+            if member in l:
+                l.remove(member)
+            return l
+        entity_dict = {}
+        for entity_file in entity_filelist:
+            f = open(entity_file)
+            e = unicode(f.read())
+            e = re.sub('\n', ' ', e)
+            for ee in remove_member(e.split('ENTITY'), '<!'):
+                ll = remove_member(ee.split(), '<!')
+                entity_name = ll[0]
+                entity_value = re.sub('>$', '', ' '.join(ll[1:]))
+                entity_dict[entity_name] = entity_value
+        for item in entity_dict.keys():
+            for value in entity_dict.keys():
+                entity_dict[item] = re.sub('&%s;' % value, entity_dict[value], entity_dict[item])
+
+        return entity_dict
 
     def _get_docbook_metadata(self, interpolated_xml_string, lang, extra_args):
         docsoup = BeautifulSoup(interpolated_xml_string, "lxml")
         metadata = []
         output = {}
+        # TODO: error handling for books without the desired attributes
         output['title'] = docsoup.title.string
         output['slug'] = slugify(docsoup.title.string)
         output['abstract'] = docsoup.subtitle.string
@@ -184,6 +191,7 @@ class docbook():
     def read_broker(self, target, lang, extra_args):
         entity_filelist, xml_filelist = self._get_xml_filelists(target, lang)
         info = self._get_xmldoc_info(xml_filelist)
-        interpolated_xml = self._substitute_entities(info, entity_filelist)
+        entity_dict = self._get_entity_dict(entity_filelist)
+        interpolated_xml = self._substitute_entities(info, entity_dict)
         meta = self._get_docbook_metadata(interpolated_xml, lang, extra_args)
         return meta
