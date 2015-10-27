@@ -1,12 +1,13 @@
 import argparse
 import ConfigParser
-from anerist import extractors, file_handlers
+from anerist import extractors, file_handlers, collector
 import sys
 import os
 
 rest_machine = extractors.rest()
 docbook_machine = extractors.docbook()
 file_machine = file_handlers.file_handlers()
+collect_machine = collector.collector()
 
 def extra_args(extras=None, returntype="string"):
     if not extras:
@@ -36,7 +37,12 @@ def extra_args(extras=None, returntype="string"):
 class Cli(object):
     def __init__(self):
         self.args = self.parse_args()
-
+    
+    def collect(self):
+        target = self.args.target
+        output = self.args.output
+        metadata = collect_machine.read_broker(target, output)
+        file_machine.write_json(metadata, output)
     #def extract(self, markup, output, target, lang):
     def extract(self):
         markup = self.args.markup
@@ -65,6 +71,25 @@ class Cli(object):
             )
         subparsers = parser.add_subparsers(help='sub-command help', dest='subcommand')
         subparsers.required = True
+        collect_parser = subparsers.add_parser(
+            'collect',
+            help = """
+                Collects JSON format metadata and prepares it.
+                """
+            )
+        collect_parser.set_defaults(func=self.collect)
+        collect_parser.add_argument(
+            'target',
+            help = 'files or path to collect',
+            nargs = '*',
+            default = [os.getcwd()],
+            )
+        collect_parser.add_argument(
+            '-o',
+            '--output',
+            help = "metadata file for output.  Defaults to 'aggregate_metadata.json'",
+            default = os.path.join(os.getcwd(), 'aggregate_metadata.json'),
+            )
         update_parser = subparsers.add_parser(
             'extract',
             help = """
