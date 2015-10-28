@@ -7,7 +7,7 @@ import os
 rest_machine = extractors.rest()
 docbook_machine = extractors.docbook()
 file_machine = file_handlers.file_handlers()
-collect_machine = collector.collector()
+
 
 def extra_args(extras=None, returntype="string"):
     if not extras:
@@ -41,8 +41,8 @@ class Cli(object):
     def collect(self):
         target = self.args.target
         output = self.args.output
-        metadata = collect_machine.read_broker(target, output)
-        file_machine.write_json(metadata, output)
+        aggregate_metadata = collector.collect(target)
+        file_machine.write_json(aggregate_metadata, output)
     #def extract(self, markup, output, target, lang):
     def extract(self):
         markup = self.args.markup
