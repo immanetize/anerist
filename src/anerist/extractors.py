@@ -9,6 +9,11 @@ from docutils.nodes import Special, Invisible, FixedTextElement
 from anerist.rst import custom_directives
 
 def slugify(title):
+    """
+    Give it a string, and slugify makes it a slug. Spaces are converted to
+    hyphens, some basic language processing is done - for now, removing 
+    articles - and all characters are lower-cased.
+    """
     title = title.lower()
     words = title.split(' ')
     articles = "a", "an", "the"
@@ -23,6 +28,9 @@ def slugify(title):
 # Thanks Alex Martelli!
 # https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/2819788#2819788
 class FakeSecHead(object):
+    """
+    This simply helps ConfigParser read perl config::simple config files.
+    """
     def __init__(self, fp):
         self.fp = fp
         self.sechead = '[pants]\n'
@@ -35,9 +43,17 @@ class FakeSecHead(object):
         else: 
             return self.fp.readline()
 class rest():
+    """
+    Extracts metadata from a ReStructuredText document.  Some 'custom' directives are
+    expected, refer to rst/custom_directives for details.
+    """
     parser = rst.Parser(rfc2822=True)
 
     def _read_rst_config(self, contents, source_path=None, destination_path=None):
+        """
+        Pass in a ReStructuredText document, as a string, and get back a docutils
+        document object.
+        """
         overrides = {}
         overrides['input_encoding'] = 'unicode'
         output, pub = core.publish_programmatically(
@@ -55,6 +71,12 @@ class rest():
         document = pub.writer.document
         return document     
     def _parse_metadata(self, document):
+        """
+        Give an entire ReStructuredText document, as a docutils 'document' object.
+        Returns specific, targeted document attributes.
+        Use like:
+            title, slug, abstract, tags, taxonomy = _parse_metadata(document)
+        """
         title = document.get('title')
         for element in document:
             if element.tagname == 'slug':
@@ -82,6 +104,9 @@ class rest():
                
         return title, slug, abstract, tags, taxonomy
     def _read_file(self, inputfile, lang, extra_args):
+        """
+        Give a path to a ReStructuredText file, receive the file's metadata.
+        """
         output = {}
         f = open(inputfile, 'r')
         print("reading " + os.path.basename(inputfile))
@@ -96,6 +121,22 @@ class rest():
                 output[key] = extra_args[key]
         return output
     def read_broker(self, target, lang, extra_args):
+        """
+        Give it a list of files or paths, and it does all the things
+        to retrieve metadata from ReStructuredText files it finds.
+
+        The read_broker expects three arguments:
+
+        - target: a list of files or paths to search.  Given paths,
+            looks only for files ending in ".rst"
+        
+        - lang: The language code of the target document.  Usefulness is
+            dubious here.
+
+        - extra_args: A dictionary of extra metadata to slap on after 
+            reading the file.
+
+        """
         metadata = []
         file_list = []
         for item in target:

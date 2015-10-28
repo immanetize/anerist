@@ -4,6 +4,15 @@ from anerist import file_handlers
 file_machine = file_handlers.file_handlers()
 
 def collect(target):
+    """
+    Walks a list of provided paths (or files) for anerist-compatible 
+    JSON metadata.  If paths are provided instead of absolute filenames,
+    only files ending in ".json" will be matched.
+
+    After discovering files, the collector opens each to return a python 
+    object containing all discovered metadata.
+    """
+
     meta_files = []
     aggregate_metadata = []
     for path in target:

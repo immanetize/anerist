@@ -1,3 +1,8 @@
+.. abstract::
+  An explanation of the purpose of anerist.
+  Also provides usage information.
+
+
 =============
  the Anerist
 =============

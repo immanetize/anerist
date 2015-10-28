@@ -12,7 +12,7 @@ def rhbz_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
     """
     def get_bug_summary(bug):
         # this might want to do something more interesting someday
-        summary = "RHBZ#%s" bug
+        summary = "RHBZ#%s" % bug
         return summary
 
     try:

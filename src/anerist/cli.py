@@ -10,6 +10,23 @@ file_machine = file_handlers.file_handlers()
 
 
 def extra_args(extras=None, returntype="string"):
+    """
+    Utility function for processing the "--extra-args" argument to the 
+    anerist extractor.  Intended for use with programatic invocation of anerist.
+
+    The returntype declaration is required because this function does double duty,
+    both preparing and validating command line arguments, and later processing those
+    arguments into a format that's friendly for inclusion in document metadata.
+    
+    Markup processors must optionally accept an extra-args dict, and override 
+    discovered metadata with their values.  For example, given a content file obviously 
+    titled "Timmy Goes Fishing", an extra-args input like this:
+
+    extra-args = { "title": "Timmy Goes on a Boat Ride" }
+
+    must result in final metadata representing the latter title.
+
+    """
     if not extras:
         return None
     d = {}
@@ -50,9 +67,6 @@ class Cli(object):
         target = self.args.target
         lang = self.args.lang
         extra = extra_args(self.args.extra_args, returntype="dict")
-        #extra = {'three': 'tres', 'two': 'dos', 'one': 'uno'}
-        #extra = {"extra": "true"}
-        #extra=None
         if markup == 'rest':
             metadata = rest_machine.read_broker(target, lang, extra)
         elif markup == 'docbook':
