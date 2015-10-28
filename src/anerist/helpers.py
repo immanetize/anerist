@@ -7,7 +7,13 @@ import errno
 import sys
 
 class PublicanHelpers():
+    """
+    Various utility functions for processing Publican projects.
+    """
     def valid_formats(self):
+        """
+        Returns a list of publican output formats.
+        """
         valid_formats = [
                 "drupal-book",
                 "eclipse",
@@ -22,6 +28,9 @@ class PublicanHelpers():
                 ]
         return valid_formats
     def valid_langs(self):
+        """
+        Returns a list of valid language codes.  python-babel exists, this should die.
+        """
         language_list = [
             "ar-sa",
             "as-in",
@@ -80,12 +89,23 @@ class PublicanHelpers():
         return language_list
 
 class FedoraHelpers():
+    """
+    Various utility functions for processing Fedora Documentation projects.
+    """
     def guide_git_url(self, guide):
+        """
+        Fedorahosted repo paths are predictable, so this will accept the short name 
+        of a guide and return both anonymous and ssh git URIs for them.
+        """
         anon_url = "https://git.fedorahosted.org/git/docs/%s.git" % guide
         # ssh_url = "ssh://git.fedorahosted.org/git/docs/%s.git" % guide
         ssh_url = "ssh://buildbot@lemuria.home.randomuser.org:/srv/projects/docs/guides/%s" % guide
         return anon_url, ssh_url
     def get_remote_branches(self, guide=None, remote=None):
+        """
+        A buildsystem should care about branches. This takes a remote repository URI, and
+        retrieves a list of branches in that remote.
+        """
         from git import Repo
         if guide is None and remote is None:
             print("""
@@ -137,7 +157,9 @@ class FedoraHelpers():
         return published_heads
 
     def mkdir_p(self, path):
-        # thanks tzot, http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
+        """ recursive directory creation, without complaint. thanks tzot, 
+        http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
+        """
         try:
                 os.makedirs(path)
         except OSError as exc: # Python >2.5
@@ -145,16 +167,26 @@ class FedoraHelpers():
                 pass
             else: raise
     def _reponame_extractor(self, remote):
+        """
+        sometimes a folder ends with '.git', apparently, and we don't like that.
+        """
         reponame = os.path.basename(remote)
         if reponame.endswith('.git'):
             reponame = reponame[:-len('.git')]
         return reponame
     def published_publican_guides(self):
+        """
+        Given a list of all guides, and guides that should not be published, 
+        this returns a list of all guides that should be published.
+        """
         all_guides = set(self.all_publican_guides())
         old_guides = set(self.deprecated_publican_guides())
         published_guides = list(all_guides.difference(old_guides))
         return published_guides
     def all_publican_guides(self):
+        """
+        A big list of all the Fedora Docs publican guides.
+        """
         guide_list = [
                 "user-guide",
                 "openssh-guide",
@@ -211,6 +243,10 @@ class FedoraHelpers():
                 ]
         return guide_list
     def deprecated_publican_guides(self):
+        """
+        A big list of all the Fedora Docs publican guides that are depricated.
+        """
+
         guide_list = [
             "user-guide",
             "docsite-publican",
@@ -244,6 +280,11 @@ class FedoraHelpers():
             ]
         return guide_list
     def release_tracker(self):
+        """
+        Queries the Fedora Project Packages Database to get a list of the currently
+        supported releases.  Returns one upcoming release, two supported releases, 
+        and one EOL release.
+        """
         release_checker = PkgDB()
         published_releases = []
         a = release_checker.get_collections('f*', clt_status=["Active", "EOL", "Under Development"])

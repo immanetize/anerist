@@ -157,7 +157,39 @@ class rest():
         return metadata
 
 class docbook():
+    """
+    Extracts metadata from a docbook project.  A few assumptions are made:
+
+    - XML files for a given language are stored in a folder named by the language code.
+      For example, US English sources are stored in an en-US directory.  
+
+    - This does not currently interpolate translation strings.  It expects fully prepared
+      sources in the target language.
+
+    - Content is mostly or wholly derived from either Book_Info.xml or Article_Info.xml.
+
+    - Document taxonomy is represented in a <subjectterm> value.
+
+    - Document tags are represented in a <keywordset> set.
+
+    The first three asumptions are met with any publican-created projects.  
+    Other docbook source paradigms will need to have support added in the future.
+    """
     def _get_xml_filelists(self, target, lang, scope='all'):
+        """
+        Given a list of paths, this walks the paths and returns a list of
+        XML files, and a list of XML entity files, that are discovered there.
+        
+        It isn't smart, filename will need to end with ".xml" or ".ent", respectively.
+        This could probably be improved with mime type detection, or whatever
+        /usr/bin/file does.  It doesn't know about entities within XML files; the 
+        entity files are presumed to be in a format like::
+
+            <!ENTITY PRODUCT "Anerist">
+            <!ENTITY BOOKID "Anerist Guide">
+
+        """
+
         xml_files = []
         entity_files = []
         for item in target:
@@ -172,6 +204,13 @@ class docbook():
          #placeholder - maybe later we might only want xml or entities
       
     def _get_xmldoc_info(self, xml_files):
+        """
+        Given a list of xml files, this finds either Book_Info.xml or Article_Info.xml
+        and returns their content as a string.
+
+        This could be improved by finding the actual <bookinfo> or <articleinfo> tag set,
+        even if those files aren't available.
+        """
         pub_types = "Book", "Article"
         for name in xml_files:
             if os.path.basename(name).endswith("Info.xml") and os.path.basename(name).startswith(pub_types): #&& if info_file is not set?
@@ -184,11 +223,20 @@ class docbook():
 
 
     def _substitute_entities(self, xml_string, entity_dict):
+        """
+        Give it an XML string that potentially contains entities, and a dictionary
+        of entity values, and it interpolates the entity values and returns the
+        processed string. 
+        """
         for item in entity_dict.keys():
             xml_string = re.sub('&%s;' % item, entity_dict[item], xml_string)
         return xml_string
         
     def _get_entity_dict(self, entity_filelist):
+        """
+        Takes a list of files containing entity declarations, and returns a dictionary
+        containing entity names and their values.
+        """
         
         def remove_member(l, member):
             if member in l:
@@ -214,6 +262,17 @@ class docbook():
         return entity_dict
 
     def _get_docbook_metadata(self, interpolated_xml_string, lang, extra_args):
+        """
+        Returns a dictionary of document metadata from an XML string.  This presumes some
+        tags are present:
+
+        - <title>
+        - <abstract>
+        - <keywordset>, with <keyword> children
+        - <subjectset>, with a single <subjectterm> child
+
+        Improperly prepared sources will probably fail.
+        """
         docsoup = BeautifulSoup(interpolated_xml_string, "lxml")
         metadata = []
         output = {}
@@ -234,6 +293,10 @@ class docbook():
         return metadata
 
     def read_broker(self, target, lang, extra_args):
+        """
+        Given a list of paths, this does all the things and returns a
+        python object with their metadata.
+        """
         entity_filelist, xml_filelist = self._get_xml_filelists(target, lang)
         info = self._get_xmldoc_info(xml_filelist)
         entity_dict = self._get_entity_dict(entity_filelist)
