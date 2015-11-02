@@ -7,7 +7,7 @@ import os
 rest_machine = extractors.rest()
 docbook_machine = extractors.docbook()
 file_machine = file_handlers.file_handlers()
-
+collect_machine = collector.collector()
 
 def extra_args(extras=None, returntype="string"):
     """
@@ -58,7 +58,8 @@ class Cli(object):
     def collect(self):
         target = self.args.target
         output = self.args.output
-        aggregate_metadata = collector.collect(target)
+        scope = self.args.scope
+        aggregate_metadata = collect_machine.collect(target, scope)
         file_machine.write_json(aggregate_metadata, output)
     #def extract(self, markup, output, target, lang):
     def extract(self):
@@ -103,6 +104,12 @@ class Cli(object):
             '--output',
             help = "metadata file for output.  Defaults to 'aggregate_metadata.json'",
             default = os.path.join(os.getcwd(), 'aggregate_metadata.json'),
+            )
+        collect_parser.add_argument(
+            '-s',
+            "--scope",
+            help = "Scope of output metadata",
+            default = 'all'
             )
         update_parser = subparsers.add_parser(
             'extract',
