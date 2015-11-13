@@ -1,0 +1,189 @@
+.. title:: Anerist Operational Theory
+.. slug:: anerist-theory
+.. taxonomy:: Development/Documentation/Anerist
+
+============================
+Anerist Operationonal Theory
+============================
+
+Anerist aims to be a modular, sequential, and scalable toolkit for processing documentation.  It supports multiple markup formats, with potential support for more.  While routine functionality such as syntax validation and build testing are included in the design goals, Anerist is primarily focused on enabling continuous, controlled development and publication of content.  This article describes the flow of information during content processing.
+
+.. note::
+   Anerist has been written expressly for use with the Buildbot automation platform, includes some 
+   utility functions for buildbot configuration, and development focuses on improving automation
+   with this tool.  The life cycle described implements this method, but anerist itself should be
+   useable as a standalone tool.
+
+Content Life Cycle
+==================
+
+Content follows a predictable path from genesis to publication.  Anerist functions each represent a step on that path, allowing users to manually initaite the steps for testing, or use in a continuous development infrastructure solution.   A typical article would progress through the following sequence:
+
+1. The work is composed in an accessible source control repository.  Content is organized into 
+   release-specific and development branches; all current release branches are intended to be published,
+   and development branches are used for topical collaboration and merged into release branches
+   when mature.
+
+2. Changes to the repository are detected by the buildsystem and anerist is activated to extract metadata 
+   from the content.  Externally derived or manually input metadata can be injected at this point for use
+   in subsequent sequences.
+
+4. Content is rendered into a standalone HTML document.  The HTML code of the document includes a mechanism
+   for loading an external resource, which is typically generated during later sequences.
+
+5. Content files and extracted metadata are moved to a central location, along with content from other 
+   articles and repositories.  This location's folder heirarchy is predictably structured so links can 
+   be generated solely from metadata manipulation.
+
+6. Aggregate metadata for all documents is assembled from discovered files.  This metadata is processed to
+   generate the site structure and navigation elements.  Individual HTML documents include this generated
+   content as an external resource.
+
+7. The collected documents and site framework is distributed as a static site.
+
+Derived and provided metadata
+=============================
+
+Two classes of metadata are crucial for this life cycle.  The first is derived attributes, which are deterministically extracted from the content.  The second class is explicitly provided to anerist when invoking the extraction operation.  Consider this example JSON metadata:
+
+.. code:: JSON
+
+   [
+      {
+            "lang": "en-US", 
+            "title": "Installation Guide", 
+            "taxonomy": "Users/Installation", 
+            "abstract": "Installing \"Fedora\" \"23\" on 32 and 64-bit AMD and Intel", 
+            "tags": [
+                "installation", 
+                "partitioning", 
+                "install", 
+                "anaconda", 
+                "kickstart"
+            ], 
+            "source_url": "https://git.fedorahosted.org/cgit/docs/install-guide.git/tree/en-US", 
+            "source_type": "docbook",
+            "branch": "f23", 
+            "path": "Users/Installation/installation-guide/f23/en-US/", 
+            "slug": "installation-guide"
+        }
+   ]
+
+Derived Attributes
+------------------
+
+Derived attributes are inherently representative of the article content, and extracted from the native markup.  All supported markup formats must extract this metadata from the source content.  Derived attributes, if not available or appropriate, can overridden by explicitly declared attributes.
+
+The required derived attributes are:
+
+title (required)
+   The title of the document.
+
+abstract (optional)
+   A cursory overview of the article content.
+
+tags (optional)
+   A set of keywords representing the article's content.
+
+slug (required)
+   The string used to represent the article in URLs, crosslinks, and internal functions.  Slugs must be unique.
+   If the source content does not provide a slug, the value should be a normalized and possibly shortened
+   version of the title.
+
+taxonomy (required)
+   The category of the article.  This should be standardized across participating articles and repositories.
+   An article's taxonomy is used to determine an article's place on the site, and the assembled taxonomies 
+   are used to create the site's structure.
+
+lang (required)
+   Although the language code may often be explicitly declared as part of the build process, and therefore 
+   passed to anerist as an extra argument, anerist should support extracting language codes from documents 
+   where possible.  
+
+Provided Attributes
+-------------------
+
+Provided attributes are supplied to anerist using the `--extra-args="attribute=value` syntax.  Buildbot jobs or users can programatically determine these attributes and inject them into the document's metadata.
+
+Suggested provided attributes include:
+
+source_url:
+   A resolveable path to the resource's source content.  This may be displayed with the published content to
+   promote collaboration and contribution, or retained for records and other purposes.
+
+source_type:
+   Anerist itself should provide a value for the source markup format it supports.  Potentially useful for
+   rendering of plain text sources or for meeting subsequent processing expectations.
+
+branch:
+   The branch of the source control repository being processed.  Later processing uses known branch names
+   to determine the release that the content applies to, or assess if the content applies to an outdated
+   release.  
+   
+   For branches not indented for production publication, the branch name facilitates a 'draft' space for 
+   content creators to preview their work.
+
+
+Assembled Metadata
+==================
+
+Metadata for a collection of content can be assembled and manipulated into situationally appropriate data structures.  For example, consider this sitemap:
+
+.. code ::
+
+    {
+       "children": {
+          "Developers": {
+             "children": {
+                "Security": {
+                   "children": {}, 
+                   "contents": [
+                      "Securing TLS"
+                   ]
+                }, 
+                "Anaconda": {
+                   "children": {}, 
+                   "contents": [
+                      "Anaconda Addon Development Guide"
+                   ]
+                }
+             }, 
+             "contents": []
+          }, 
+          "Users": {
+             "children": {
+                "Installation": {
+                   "children": {
+                      "ARM": {
+                         "children": {}, 
+                         "contents": [
+                            "ARM Getting Started Guide"
+                         ]
+                      }
+                   }, 
+                   "contents": [
+                      "Burning ISO images to disc", 
+                      "Fedora Live Images", 
+                      "Multiboot Guide", 
+                      "Installation Guide", 
+                      "Technical Notes", 
+                      "Release Notes"
+                   ]
+                }, 
+                "Administration": {
+                   "children": {
+                      "OpenSSH": {
+                         "children": {}, 
+                         "contents": [
+                            "OpenSSH Guide"
+                         ]
+                      },
+                   }
+                }
+             }
+          }
+       }
+    }
+
+
+
