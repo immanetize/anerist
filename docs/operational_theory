@@ -185,5 +185,59 @@ Metadata for a collection of content can be assembled and manipulated into situa
        }
     }
 
+Using this construct, a navigation structure can be generated that will display a category's subordinate categories and titles and abstracts for articles that the category is a direct parent to.  Other constructs can be built to suit diverse modes of interaction.
+
+Interaction Points
+==================
+
+This section, primarily written as a design reference for the generated site, outlines some user to data relationships that are crucial to organization and interaction.  
+
+Taxonomy
+--------
+
+.. note::
+   The language used here to classify levels of the category structure aren't official or encoded, but are useful
+   for discussion.  Anerist should support content heirarchies of arbitrary depth - sane design does not.
+   The discussion covers four layers of content organization, which is the recommended maximum depth
+   for an efficiently navigated site.  Keep in mind that the names of individual categories are derived from
+   the source content, because each article is the best positioned to describe itself.
+
+Theme
+`````
+The heirarchy's top teir is comprised of very theme defintions that are used to separate content broadly by target audence.  Navigation between information at this level will not often be user-initiated.  For Fedora Docs, this level is comprised of:
+
+- Users
+- Contributors
+- Developers
+
+Visitors to the site will be first exposed to the "Users" theme, as the most commonly sought form of content.  The visitor's chosen theme should be immediately apparent from the visual theme, and the names of all themes should be visible at all times and available for navigation.
+
+Scope
+`````
+
+Each theme is further divided by the scope of the content within them.  There may be a passage describing the section, or listing popular descendants, but the main content body at this level should primarily present child articles and categories. Scopes for each Fedora Docs theme might play out like this:
+
+- Users
+  - Installation
+  - Administration
+  - Miscellaneous
+  - Desktop usage
+
+- Contributors
+  - Infrastructure
+  - Documentation
+  - Quality Assurance
+  - Design
+
+- Developers
+  - Python
+  - Ruby
+  - Packaging
+
+When viewing article content, the current parent or ancestor scope should always be presented to the user, and a list of the scope's peers should be available for immediate display.
+
+
+
+
 
 
