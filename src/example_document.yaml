@@ -1,0 +1,58 @@
+- name: Fedora Networking Guide
+  markup_type: docbook
+  native_language: en-US
+  published_branches:
+    - f23
+    - f22
+  draft_branches:
+    - master
+  source_uri: https://git.fedorahosted.org/git/docs/networking-guide.git
+  scm_type: git
+  translation_uri: https://fedora.zanata.org/project/view/networking-guide/
+  translation_type: zanata
+  jobs:
+    - name: build test
+      branches: all
+      scheduler: scm_change
+      steps:
+        - scm_pull
+        - build:
+          langs: native_language
+        - translation_push
+    - name: translation test
+      branches:
+        - published_branches
+        - master
+      scheduler: nightly
+      steps:
+        - scm_pull
+        - translation_pull:
+          langs: +25%
+        - build:
+          langs: all
+    - name: draft publish
+      branches:
+        - draft_branches
+      scheduler: scm_change
+      steps:
+        - scm_pull
+        - build:
+          langs: 
+            - native_language
+            - +50%
+        - publish:
+          site: draft
+    - name: production publish
+      branches: published_branches
+      scheduler: scm_change
+      steps:
+        - scm_pull
+        - translation_pull:
+          langs: +80%
+        - build:
+          langs: all
+        - extract
+        - publish:
+          site: production
+
+
