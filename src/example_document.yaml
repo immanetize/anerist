@@ -16,7 +16,7 @@
       scheduler: scm_change
       steps:
         - type: scm_pull
-        - build:
+        - type: build
           langs: native_language
         - type: translation_push
     - name: translation test
@@ -26,9 +26,9 @@
       scheduler: nightly
       steps:
         - type: scm_pull
-        - translation_pull:
+        - type: translation_pull
           langs: +25%
-        - build:
+        - type: build
           langs: all
     - name: draft publish
       branches:
@@ -36,11 +36,12 @@
       scheduler: scm_change
       steps:
         - type: scm_pull
-        - build:
+        - type: build
           langs: 
             - native_language
             - +50%
-        - publish:
+        - type: extract
+        - type: publish
           site: draft
     - name: production publish
       branches: published_branches
@@ -49,10 +50,10 @@
         - type: scm_pull
         - translation_pull:
           langs: +80%
-        - build:
+        - type: build
           langs: all
-        - extract
-        - publish:
+        - type: extract
+        - type: publish
           site: production
 
 
