@@ -15,17 +15,17 @@
       branches: all
       scheduler: scm_change
       steps:
-        - scm_pull
+        - type: scm_pull
         - build:
           langs: native_language
-        - translation_push
+        - type: translation_push
     - name: translation test
       branches:
         - published_branches
         - master
       scheduler: nightly
       steps:
-        - scm_pull
+        - type: scm_pull
         - translation_pull:
           langs: +25%
         - build:
@@ -35,7 +35,7 @@
         - draft_branches
       scheduler: scm_change
       steps:
-        - scm_pull
+        - type: scm_pull
         - build:
           langs: 
             - native_language
@@ -46,7 +46,7 @@
       branches: published_branches
       scheduler: scm_change
       steps:
-        - scm_pull
+        - type: scm_pull
         - translation_pull:
           langs: +80%
         - build:
